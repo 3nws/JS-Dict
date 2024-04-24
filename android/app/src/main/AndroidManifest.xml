@@ -39,7 +39,7 @@
                 <data android:host="www.jisho.org" />
                 <data android:pathPrefix="/word/" />
                 <data android:pathPrefix="/sentences/" />
-                <data android:pathPrefix="/search/" />
+                <data android:pathPrefix="/search" />
             </intent-filter>
 
             <!-- Shared Text -->

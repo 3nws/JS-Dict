@@ -52,23 +52,14 @@ class LinkHandler {
 
     final type = url.pathSegments.first;
     final data = url.pathSegments.last;
+    final keyword = url.queryParameters["keyword"] ?? data;
 
     final widget = switch (type) {
       "word" => WordDetailsScreen.search(data),
       "sentences" => SentenceDetailsScreen.id(data),
       "search" => () {
-          final rawQuery = removeTags(data).trim();
-
-          // Go directly to kanji details if it's
-          // a kanji search with only one character
-          if (_typeTagRegex("kanji").hasMatch(data) &&
-              rawQuery.length == 1 &&
-              isKanji(rawQuery)) {
-            return KanjiDetailsScreen.id(rawQuery);
-          }
-
-          tabController.index = _tabIndex(data);
-          QueryProvider.of(context).query = data;
+          tabController.index = _tabIndex(keyword);
+          QueryProvider.of(context).query = keyword;
           popAll(context);
         }.call(),
       _ => null,
