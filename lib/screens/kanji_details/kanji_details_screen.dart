@@ -17,7 +17,7 @@ import "package:jsdict/widgets/link_span.dart";
 import "package:jsdict/widgets/loader.dart";
 
 import "compound_list.dart";
-import "stroke_diagram.dart";
+import "stroke_order.dart";
 
 class KanjiDetailsScreen extends StatelessWidget {
   const KanjiDetailsScreen(Kanji this.kanji, {super.key}) : kanjiId = null;
@@ -202,7 +202,8 @@ class _KanjiDetailsWidget extends StatelessWidget {
         ],
         if (kanjiDetails.variants.isNotEmpty)
           _VariantsWidget(kanjiDetails.variants),
-        StrokeDiagramWidget(kanji.code),
+        StrokeOrderWidget(
+            kanji.code, kanji.kanji.codeUnitAt(0).toRadixString(16)),
         if (kanjiDetails.onCompounds.isNotEmpty)
           CompoundList("On", kanjiDetails.onCompounds),
         const SizedBox(height: 4),

@@ -7,10 +7,11 @@ import "package:jsdict/providers/theme_provider.dart";
 import "package:jsdict/widgets/loader.dart";
 import "package:provider/provider.dart";
 
-class StrokeDiagramWidget extends StatelessWidget {
-  const StrokeDiagramWidget(this.kanjiCode, {super.key});
+class StrokeOrderWidget extends StatelessWidget {
+  const StrokeOrderWidget(this.kanjiCode, this.kanjiGifFilename, {super.key});
 
   final String kanjiCode;
+  final String kanjiGifFilename;
 
   Future<String> getData() async {
     try {
@@ -32,7 +33,7 @@ class StrokeDiagramWidget extends StatelessWidget {
 
           return ExpansionTileCard(
             shadowColor: Theme.of(context).colorScheme.shadow,
-            title: const Text("Stroke Order Diagram"),
+            title: const Text("Stroke Order"),
             children: [
               SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -42,6 +43,8 @@ class StrokeDiagramWidget extends StatelessWidget {
                             .create(data),
                         height: 90);
                   })),
+              Image.network(
+                  "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/$kanjiGifFilename.gif")
             ],
           );
         });
