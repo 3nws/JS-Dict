@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
@@ -10,6 +12,7 @@ import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
 import "package:jsdict/screens/settings_screen.dart";
 import "package:provider/provider.dart";
+import "package:flutter/services.dart";
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -27,14 +30,31 @@ class _SearchScreenState extends State<SearchScreen>
   late LinkHandler _linkHandler;
   late ShareIntentHandler _shareIntentHandler;
   late FocusNode _searchFocusNode;
+  String incomingText = "";
 
   @override
   void initState() {
     super.initState();
+    _handleIncomingTextIntent();
     _tabController = TabController(vsync: this, length: 4);
     _linkHandler = LinkHandler(context, _tabController);
     _shareIntentHandler = ShareIntentHandler(context, _tabController);
     _searchFocusNode = FocusNode();
+  }
+
+  Future<void> _handleIncomingTextIntent() async {
+    const platform = MethodChannel("io.github.petlyh.jsdict");
+
+    final Map<dynamic, dynamic>? intentMap =
+        await platform.invokeMethod("getIntent");
+
+    if (intentMap != null &&
+        intentMap["action"] == "android.intent.action.PROCESS_TEXT") {
+      final dynamic selectedText = intentMap["text"];
+      setState(() {
+        incomingText = selectedText as String;
+      });
+    }
   }
 
   @override
@@ -50,6 +70,10 @@ class _SearchScreenState extends State<SearchScreen>
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
+    if (incomingText != "") {
+      searchController.text = incomingText;
+      queryProvider.updateQuery();
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
