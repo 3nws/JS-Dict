@@ -1,5 +1,7 @@
 import "package:expansion_tile_card/expansion_tile_card.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:flutter/scheduler.dart";
 import "package:flutter/services.dart";
 import "package:flutter/widgets.dart";
 import "package:flutter_svg/flutter_svg.dart";
@@ -40,6 +42,16 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
     }
   }
 
+  Future<ByteData> getStrokeGIF() async {
+    try {
+      return await NetworkAssetBundle(Uri.parse(
+              "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${widget.kanjiGifFilename}.gif"))
+          .load("");
+    } on FlutterError {
+      return ByteData(0);
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -66,35 +78,40 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
                             .create(data),
                         height: 90);
                   })),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Gif(
-                    image: NetworkImage(
-                        "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${widget.kanjiGifFilename}.gif"),
-                    controller: _controller,
-                    fps: _fps,
-                    autostart: Autostart.loop,
-                    onFetchCompleted: () {
-                      _controller.reset();
-                      _controller.forward();
-                    },
-                  ),
-                  RotatedBox(
-                    quarterTurns: -1,
-                    child: Slider(
-                        label: _fps.toString(),
-                        value: _fps.toDouble(),
-                        min: 1,
-                        max: 60,
-                        onChanged: (v) {
-                          setState(() {
-                            _fps = v.round();
-                          });
-                        }),
-                  )
-                ],
-              ),
+              LoaderWidget(
+                  onLoad: getStrokeGIF,
+                  handler: (data) {
+                    return (data.lengthInBytes != 0)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Gif(
+                                image: MemoryImage(data.buffer.asUint8List()),
+                                controller: _controller,
+                                fps: _fps,
+                                autostart: Autostart.loop,
+                                onFetchCompleted: () {
+                                  _controller.reset();
+                                  _controller.forward();
+                                },
+                              ),
+                              RotatedBox(
+                                quarterTurns: -1,
+                                child: Slider(
+                                    label: _fps.toString(),
+                                    value: _fps.toDouble(),
+                                    min: 1,
+                                    max: 60,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _fps = v.round();
+                                      });
+                                    }),
+                              )
+                            ],
+                          )
+                        : const SizedBox.shrink();
+                  })
             ],
           );
         });
