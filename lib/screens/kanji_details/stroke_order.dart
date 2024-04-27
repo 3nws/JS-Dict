@@ -1,25 +1,49 @@
 import "package:expansion_tile_card/expansion_tile_card.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter/widgets.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:gif/gif.dart";
 import "package:jsdict/packages/kanji_diagram/kanji_diagram.dart";
 import "package:jsdict/providers/theme_provider.dart";
 import "package:jsdict/widgets/loader.dart";
 import "package:provider/provider.dart";
 
-class StrokeOrderWidget extends StatelessWidget {
+class StrokeOrderWidget extends StatefulWidget {
   const StrokeOrderWidget(this.kanjiCode, this.kanjiGifFilename, {super.key});
 
   final String kanjiCode;
   final String kanjiGifFilename;
 
+  @override
+  State<StrokeOrderWidget> createState() => _StrokeOrderWidgetState();
+}
+
+class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
+    with TickerProviderStateMixin {
+  late GifController _controller;
+  int _fps = 30;
+
+  @override
+  void initState() {
+    _controller = GifController(vsync: this);
+    super.initState();
+  }
+
   Future<String> getData() async {
     try {
-      return await rootBundle.loadString("assets/kanjivg/data/$kanjiCode.svg");
+      return await rootBundle
+          .loadString("assets/kanjivg/data/${widget.kanjiCode}.svg");
     } on FlutterError {
       // asset not found means that KanjiVg doesn't have data for the kanji
       return "";
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -30,7 +54,6 @@ class StrokeOrderWidget extends StatelessWidget {
           if (data.isEmpty) {
             return const SizedBox();
           }
-
           return ExpansionTileCard(
             shadowColor: Theme.of(context).colorScheme.shadow,
             title: const Text("Stroke Order"),
@@ -43,8 +66,35 @@ class StrokeOrderWidget extends StatelessWidget {
                             .create(data),
                         height: 90);
                   })),
-              Image.network(
-                  "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/$kanjiGifFilename.gif")
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Gif(
+                    image: NetworkImage(
+                        "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${widget.kanjiGifFilename}.gif"),
+                    controller: _controller,
+                    fps: _fps,
+                    autostart: Autostart.loop,
+                    onFetchCompleted: () {
+                      _controller.reset();
+                      _controller.forward();
+                    },
+                  ),
+                  RotatedBox(
+                    quarterTurns: -1,
+                    child: Slider(
+                        label: _fps.toString(),
+                        value: _fps.toDouble(),
+                        min: 1,
+                        max: 60,
+                        onChanged: (v) {
+                          setState(() {
+                            _fps = v.round();
+                          });
+                        }),
+                  )
+                ],
+              ),
             ],
           );
         });
