@@ -85,15 +85,21 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Gif(
-                                image: MemoryImage(data.buffer.asUint8List()),
-                                controller: _controller,
-                                fps: _fps,
-                                autostart: Autostart.loop,
-                                onFetchCompleted: () {
+                              GestureDetector(
+                                onTap: () {
                                   _controller.reset();
                                   _controller.forward();
                                 },
+                                child: Gif(
+                                  image: MemoryImage(data.buffer.asUint8List()),
+                                  controller: _controller,
+                                  fps: _fps,
+                                  autostart: Autostart.loop,
+                                  onFetchCompleted: () {
+                                    _controller.reset();
+                                    _controller.forward();
+                                  },
+                                ),
                               ),
                               RotatedBox(
                                 quarterTurns: -1,
