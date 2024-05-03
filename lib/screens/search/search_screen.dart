@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter/scheduler.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
 import "package:jsdict/packages/link_handler.dart";
@@ -71,8 +72,10 @@ class _SearchScreenState extends State<SearchScreen>
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
     if (incomingText != "") {
-      searchController.text = incomingText;
-      queryProvider.updateQuery();
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        queryProvider.query = incomingText;
+        queryProvider.updateQuery();
+      });
     }
 
     return Scaffold(
