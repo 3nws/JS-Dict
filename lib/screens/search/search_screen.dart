@@ -1,13 +1,14 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter/scheduler.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
+import "package:jsdict/packages/is_kanji.dart";
 import "package:jsdict/packages/link_handler.dart";
 import "package:jsdict/packages/navigation.dart";
 import "package:jsdict/packages/share_intent_handler.dart";
 import "package:jsdict/providers/query_provider.dart";
+import "package:jsdict/screens/kanji_details/kanji_details_screen.dart";
 import "package:jsdict/screens/search/result_page.dart";
 import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
@@ -72,9 +73,12 @@ class _SearchScreenState extends State<SearchScreen>
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
     if (incomingText != "") {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
+      Future.microtask(() {
         queryProvider.query = incomingText;
         queryProvider.updateQuery();
+        if (incomingText.length == 1 && isKanji(incomingText)) {
+          pushScreen(context, KanjiDetailsScreen.id(incomingText)).call();
+        }
       });
     }
 

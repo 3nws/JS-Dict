@@ -61,6 +61,12 @@ class LinkHandler {
           tabController.index = _tabIndex(keyword);
           QueryProvider.of(context).query = keyword;
           popAll(context);
+
+          // Go directly to kanji details as well if it's
+          // a kanji search with only one character
+          if (keyword.length == 1 && isKanji(keyword)) {
+            return KanjiDetailsScreen.id(keyword);
+          }
         }.call(),
       _ => null,
     };
