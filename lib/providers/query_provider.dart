@@ -72,7 +72,11 @@ class QueryProvider extends ChangeNotifier {
 
   void addToHistoryAndSearch(String text) {
     _query = text;
-    _preferences.setStringList(_historyKey, history..insert(0, text));
+    _preferences.setStringList(
+        _historyKey,
+        history
+          ..remove(text)
+          ..insert(0, text));
     updateQuery();
   }
 
