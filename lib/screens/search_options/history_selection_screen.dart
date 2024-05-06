@@ -38,7 +38,7 @@ class _HistorySelectionState extends State<_HistorySelection> {
         ...queryProvider.history.map((historyEntry) => ListTile(
             title: Text(historyEntry),
             trailing: const Icon(Icons.north_west),
-            onTap: () => queryProvider.insertText(historyEntry)))
+            onTap: () => queryProvider.query = historyEntry))
       ],
     ));
   }
