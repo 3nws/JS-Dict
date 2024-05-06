@@ -1,8 +1,11 @@
 import "package:flutter/material.dart";
 import "package:jsdict/packages/remove_tags.dart";
+import "package:jsdict/singletons.dart";
 import "package:provider/provider.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 class QueryProvider extends ChangeNotifier {
+  final SharedPreferences _preferences = getPreferences();
   static QueryProvider of(BuildContext context) {
     return Provider.of<QueryProvider>(context, listen: false);
   }
@@ -62,6 +65,20 @@ class QueryProvider extends ChangeNotifier {
     searchController.text = newText;
     searchController.selection =
         TextSelection.collapsed(offset: selectionStart + 1);
+  }
+
+  static const _historyKey = "History";
+  List<String> get history => _preferences.getStringList(_historyKey) ?? [];
+
+  void addToHistoryAndSearch(String text) {
+    _query = text;
+    _preferences.setStringList(_historyKey, history..add(text));
+    updateQuery();
+  }
+
+  void clearHistory() {
+    _preferences.remove(_historyKey);
+    searchController.text = "";
   }
 
   @override

@@ -10,6 +10,7 @@ import "package:jsdict/packages/share_intent_handler.dart";
 import "package:jsdict/providers/query_provider.dart";
 import "package:jsdict/screens/kanji_details/kanji_details_screen.dart";
 import "package:jsdict/screens/search/result_page.dart";
+import "package:jsdict/screens/search_options/history_selection_screen.dart";
 import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
 import "package:jsdict/screens/settings_screen.dart";
@@ -73,9 +74,9 @@ class _SearchScreenState extends State<SearchScreen>
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
     if (incomingText != "") {
-      Future.microtask(() {
+      Future.microtask(() async {
         queryProvider.query = incomingText;
-        queryProvider.updateQuery();
+        queryProvider.addToHistoryAndSearch(incomingText);
         if (incomingText.length == 1 && isKanji(incomingText)) {
           pushScreen(context, KanjiDetailsScreen.id(incomingText)).call();
         }
@@ -94,8 +95,8 @@ class _SearchScreenState extends State<SearchScreen>
           style: jpTextStyle,
           focusNode: _searchFocusNode,
           controller: searchController,
-          onSubmitted: (_) => queryProvider.updateQuery(),
-          autofocus: false,
+          onSubmitted: (text) => queryProvider.addToHistoryAndSearch(text),
+          autofocus: true,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               border: InputBorder.none,
@@ -114,6 +115,11 @@ class _SearchScreenState extends State<SearchScreen>
             onPressed: pushScreen(context, const TagSelectionScreen()),
             icon: const Icon(Icons.tag),
             tooltip: "Tags",
+          ),
+          IconButton(
+            onPressed: pushScreen(context, const HistorySelectionScreen()),
+            icon: const Icon(Icons.history),
+            tooltip: "History",
           ),
           IconButton(
             onPressed: pushScreen(context, const SettingScreen()),
