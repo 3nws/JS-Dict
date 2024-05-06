@@ -1,21 +1,17 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
-import "package:jsdict/packages/is_kanji.dart";
 import "package:jsdict/packages/link_handler.dart";
 import "package:jsdict/packages/navigation.dart";
+import "package:jsdict/packages/process_text_intent_handler.dart";
 import "package:jsdict/packages/share_intent_handler.dart";
 import "package:jsdict/providers/query_provider.dart";
-import "package:jsdict/screens/kanji_details/kanji_details_screen.dart";
 import "package:jsdict/screens/search/result_page.dart";
 import "package:jsdict/screens/search_options/history_selection_screen.dart";
 import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
 import "package:jsdict/screens/settings_screen.dart";
 import "package:provider/provider.dart";
-import "package:flutter/services.dart";
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -33,31 +29,15 @@ class _SearchScreenState extends State<SearchScreen>
   late LinkHandler _linkHandler;
   late ShareIntentHandler _shareIntentHandler;
   late FocusNode _searchFocusNode;
-  String incomingText = "";
 
   @override
   void initState() {
     super.initState();
-    _handleIncomingTextIntent();
     _tabController = TabController(vsync: this, length: 4);
     _linkHandler = LinkHandler(context, _tabController);
     _shareIntentHandler = ShareIntentHandler(context, _tabController);
+    ProcessTextIntentHandler(context, _tabController);
     _searchFocusNode = FocusNode();
-  }
-
-  Future<void> _handleIncomingTextIntent() async {
-    const platform = MethodChannel("io.github.petlyh.jsdict");
-
-    final Map<dynamic, dynamic>? intentMap =
-        await platform.invokeMethod("getIntent");
-
-    if (intentMap != null &&
-        intentMap["action"] == "android.intent.action.PROCESS_TEXT") {
-      final dynamic selectedText = intentMap["text"];
-      setState(() {
-        incomingText = selectedText as String;
-      });
-    }
   }
 
   @override
@@ -73,15 +53,6 @@ class _SearchScreenState extends State<SearchScreen>
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
-    if (incomingText != "") {
-      Future.microtask(() async {
-        queryProvider.query = incomingText;
-        queryProvider.addToHistoryAndSearch(incomingText);
-        if (incomingText.length == 1 && isKanji(incomingText)) {
-          pushScreen(context, KanjiDetailsScreen.id(incomingText)).call();
-        }
-      });
-    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -96,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen>
           focusNode: _searchFocusNode,
           controller: searchController,
           onSubmitted: (text) => queryProvider.addToHistoryAndSearch(text),
-          autofocus: true,
+          autofocus: false,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               border: InputBorder.none,
