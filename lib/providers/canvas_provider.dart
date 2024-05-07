@@ -11,7 +11,6 @@ class CanvasProvider extends ChangeNotifier {
   List<Offset> currentLine = [];
   List<List<Offset>> lines = [];
   List<double> currentLinePressures = [];
-  Color color = Colors.black;
   List<String> strokes = [];
   List<String> matchingKanji = [];
   String _sexp = "";

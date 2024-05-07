@@ -12,23 +12,21 @@ class Writeable extends StatefulWidget {
 class _WriteableState extends State<Writeable> {
   late double pressure;
   late Offset position;
-  late Painter painter;
   late CustomPaint paintCanvas;
   String currentStroke = "";
 
   @override
   Widget build(BuildContext context) {
     final canvasProvider = CanvasProvider.of(context);
-
-    painter = Painter(
-        lines: canvasProvider.lines,
-        currentLine: canvasProvider.currentLine,
-        pressures: canvasProvider.pressures,
-        currentLinePressures: canvasProvider.currentLinePressures,
-        color: canvasProvider.color);
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     paintCanvas = CustomPaint(
-      painter: painter,
+      painter: Painter(
+          lines: canvasProvider.lines,
+          currentLine: canvasProvider.currentLine,
+          pressures: canvasProvider.pressures,
+          currentLinePressures: canvasProvider.currentLinePressures,
+          color: primaryColor),
     );
 
     return Listener(
@@ -91,6 +89,7 @@ class Painter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    paintStyle.color = color;
     for (int i = 0; i < currentLine.length - 1; i++) {
       paintStyle.strokeWidth = currentLinePressures[i] * scalePressures;
       canvas.drawPoints(
