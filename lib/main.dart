@@ -2,6 +2,7 @@ import "package:dynamic_color/dynamic_color.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:jsdict/providers/canvas_provider.dart";
 import "package:jsdict/providers/query_provider.dart";
 import "package:jsdict/providers/theme_provider.dart";
 import "package:jsdict/screens/search/search_screen.dart";
@@ -30,6 +31,7 @@ class JsDictApp extends StatelessWidget {
       return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => QueryProvider()),
+            ChangeNotifierProvider(create: (_) => CanvasProvider()),
             ChangeNotifierProvider(create: (_) => ThemeProvider()),
           ],
           builder: (context, _) {

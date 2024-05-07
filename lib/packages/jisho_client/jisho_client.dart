@@ -1,5 +1,6 @@
 library jisho_dart;
 
+import "dart:convert";
 import "dart:io";
 
 import "package:html/dom.dart";
@@ -34,6 +35,26 @@ class JishoClient {
     }
 
     return parse(response.body);
+  }
+
+  Future<String> _post(String path, Object body) async {
+    final response = await _client.post(Uri.parse(baseUrl + path),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        encoding: Encoding.getByName("utf-8"),
+        body: body);
+
+    if (response.statusCode != HttpStatus.ok) {
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(response.request!.url);
+      }
+
+      throw HttpException(
+          "Unsuccessful response status: ${response.statusCode}");
+    }
+
+    return response.body;
   }
 
   String _searchPath<T extends SearchType>(String query, {int page = -1}) {
@@ -78,5 +99,11 @@ class JishoClient {
   Future<Sentence> sentenceDetails(String sentenceId) {
     final path = "/sentences/$sentenceId";
     return _getHtml(path).then((document) => Parser.sentenceDetails(document));
+  }
+
+  Future<List<String>> handwritingMatches(String sexp) {
+    const path = "/handwriting";
+    return _post(path, {"sexp": sexp})
+        .then((body) => Parser.handwritingKanji(body));
   }
 }

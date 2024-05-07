@@ -477,4 +477,8 @@ class Parser {
 
     return sentence;
   }
+
+  static List<String> handwritingKanji(String body) {
+    return body.length > 1 ? body.split("") : [];
+  }
 }
