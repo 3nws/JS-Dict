@@ -9,6 +9,7 @@ import "package:jsdict/packages/navigation.dart";
 import "package:jsdict/packages/string_util.dart";
 import "package:jsdict/screens/search/result_page.dart";
 import "package:jsdict/widgets/action_dialog.dart";
+import "package:jsdict/widgets/anki_button.dart";
 import "package:jsdict/widgets/link_popup.dart";
 import "package:jsdict/models/models.dart";
 import "package:jsdict/singletons.dart";
@@ -34,6 +35,17 @@ class KanjiDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Kanji"),
         actions: [
+          kanji != null
+              ? AnkiButton(
+                  kanji: kanji,
+                )
+              : LoaderWidget(
+                  isOnAction: true,
+                  onLoad: () => getClient().kanjiDetails(kanjiId!),
+                  handler: (data) => AnkiButton(
+                    kanji: data,
+                  ),
+                ),
           LinkPopupButton([
             ("Open in Browser", "https://jisho.org/search/$_id %23kanji"),
             (

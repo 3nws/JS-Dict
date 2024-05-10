@@ -2,7 +2,7 @@ name: jsdict
 description: A new Flutter project.
 publish_to: 'none'
 
-version: 1.2.8+21
+version: 1.2.9+22
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -34,6 +34,10 @@ dependencies:
   share_plus: ^8.0.2
   receive_sharing_intent: ^1.6.8
   gif: ^2.3.0
+  async: ^2.11.0
+  flutter_ankidroid:
+    git:
+      url: https://github.com/3nws/flutter_ankidroid
 
 dev_dependencies:
   flutter_test:
@@ -55,3 +59,4 @@ flutter:
   assets:
     - assets/kanjivg/LICENSE.kanjivg.txt
     - assets/kanjivg/data/
+    - assets/anki-icon.svg

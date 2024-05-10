@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/packages/list_extensions.dart";
 import "package:jsdict/packages/navigation.dart";
+import "package:jsdict/widgets/anki_button.dart";
 import "package:jsdict/widgets/copyable_furigana_text.dart";
 import "package:jsdict/widgets/wikipedia.dart";
 import "package:jsdict/widgets/entry_tile.dart";
@@ -50,6 +51,17 @@ class WordDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Word"),
         actions: [
+          word != null
+              ? AnkiButton(
+                  word: word,
+                )
+              : LoaderWidget(
+                  isOnAction: true,
+                  onLoad: _searchFuture,
+                  handler: (data) => AnkiButton(
+                    word: data,
+                  ),
+                ),
           ValueListenableBuilder(
             valueListenable: audioUrlValue,
             builder: (_, __, ___) => audioUrl != null

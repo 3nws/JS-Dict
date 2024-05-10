@@ -7,11 +7,13 @@ class LoaderWidget<T> extends StatefulWidget {
       {super.key,
       required this.onLoad,
       required this.handler,
-      this.placeholder = const Text("")});
+      this.placeholder = const Text(""),
+      this.isOnAction = false});
 
   final Future<T> Function() onLoad;
   final Widget Function(T data) handler;
   final Widget placeholder;
+  final bool isOnAction;
 
   @override
   State<LoaderWidget<T>> createState() => _LoaderWidgetState<T>();
@@ -40,7 +42,8 @@ class _LoaderWidgetState<T> extends State<LoaderWidget<T>> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: Container(
-                  margin: const EdgeInsets.all(20.0),
+                  width: widget.isOnAction ? 15 : null,
+                  margin: const EdgeInsets.all(20),
                   child: const CircularProgressIndicator()),
             );
           }
