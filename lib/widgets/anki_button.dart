@@ -142,7 +142,7 @@ class AnkiButton extends StatelessWidget {
               }
             }
           }
-          anki.killIsolate();
+          // anki.killIsolate();
         },
         icon: SvgPicture.asset(
           "assets/anki-icon.svg",
