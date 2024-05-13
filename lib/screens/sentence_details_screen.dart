@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:jsdict/jp_text.dart";
+import "package:jsdict/widgets/anki_button.dart";
 import "package:jsdict/widgets/copyable_furigana_text.dart";
 import "package:jsdict/widgets/link_popup.dart";
 import "package:jsdict/models/models.dart";
@@ -25,6 +26,17 @@ class SentenceDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(_id == null ? "Example Sentence" : "Sentence"),
         actions: [
+          sentence != null
+              ? AnkiButton(
+                  sentence: sentence,
+                )
+              : LoaderWidget(
+                  isOnAction: true,
+                  onLoad: () => getClient().sentenceDetails(sentenceId!),
+                  handler: (data) => AnkiButton(
+                    sentence: data,
+                  ),
+                ),
           if (_id != null)
             LinkPopupButton([
               ("Open in Browser", "https://jisho.org/sentences/$_id"),

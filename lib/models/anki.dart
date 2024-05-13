@@ -68,3 +68,32 @@ class AnkiKanjiModel extends AnkiModel {
   String css =
       """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n}""";
 }
+
+class AnkiSentenceModel extends AnkiModel {
+  @override
+  String name = "js-dict-sentence";
+
+  @override
+  List<String> fields = [
+    "Sentence",
+    "SentFurigana",
+    "SentEng",
+    // "Vocab",
+    "Link",
+  ];
+
+  @override
+  List<String> cards = ["Sentence"];
+
+  @override
+  List<String> qfmt = ["""<div id="kanji">{{Sentence}}</div>"""];
+
+  @override
+  List<String> afmt = [
+    """{{FrontSide}}\n\n<hr id=answer>\n\n<br><br><div class="jpsentence" lang="ja">\n{{edit:furigana:SentFurigana}}\n{{^SentFurigana}}\n{{/SentFurigana}}</div><br><br>{{SentEng}}<div class="vocab">\nvocab<br><br></div>{{#Link}}<a href="{{Link}}">Open in JS-Dict</a>{{/Link}}""",
+  ];
+
+  @override
+  String css =
+      """#kanji,.jpsentence{\n\nfont-size: 35px;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ncolor: black;\n\nbackground-color: white;\n\n}\n\n.vocab{\nmargin-top:16px;\n}\n.vocab div{\ndisplay:inline-block;\n}\n.vocab br{\ndisplay:none;\n}\n.vocab > .tags{\nvertical-align:top;\n}""";
+}

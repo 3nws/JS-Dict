@@ -3,12 +3,14 @@ import "package:collection/collection.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:jsdict/models/models.dart";
+import "package:jsdict/packages/string_util.dart";
 import "package:jsdict/singletons.dart";
 
 class AnkiButton extends StatelessWidget {
   final Word? word;
   final Kanji? kanji;
-  const AnkiButton({super.key, this.kanji, this.word});
+  final Sentence? sentence;
+  const AnkiButton({super.key, this.kanji, this.word, this.sentence});
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +18,7 @@ class AnkiButton extends StatelessWidget {
         onPressed: () async {
           final anki = getAnki();
           final version = await anki.apiHostSpecVersion();
+          final object = kanji ?? word ?? sentence;
           if (version.isError) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -26,6 +29,19 @@ class AnkiButton extends StatelessWidget {
             }
             return;
           }
+
+          String type;
+
+          if (object is Kanji) {
+            type = "kanji";
+          } else if (object is Word) {
+            type = "word";
+          } else if (object is Sentence) {
+            type = "sentence";
+          } else {
+            return;
+          }
+
           final decks = await anki.deckList();
           if (decks.isValue) {
             Result<int> res;
@@ -47,13 +63,24 @@ class AnkiButton extends StatelessWidget {
             if (models.isValue) {
               final modelsMap = models.asValue!.value;
               int modelId = (modelsMap.keys.firstWhere(
-                  (k) =>
-                      modelsMap[k] ==
-                      "js-dict-${kanji != null ? 'kanji' : 'word'}",
+                  (k) => modelsMap[k] == "js-dict-$type",
                   orElse: () => -1)) as int;
 
-              final AnkiModel model =
-                  kanji != null ? AnkiKanjiModel() : AnkiWordModel();
+              AnkiModel model;
+
+              switch (type) {
+                case "kanji":
+                  model = AnkiKanjiModel();
+                  break;
+                case "word":
+                  model = AnkiWordModel();
+                  break;
+                case "sentence":
+                  model = AnkiSentenceModel();
+                  break;
+                default:
+                  return;
+              }
 
               if (modelId == -1) {
                 res = await anki.addNewCustomModel(model.name, model.fields,
@@ -62,58 +89,94 @@ class AnkiButton extends StatelessWidget {
                   modelId = res.asValue!.value;
                 }
               }
-              final fields = kanji != null
-                  ? [
-                      kanji!.kanji,
-                      kanji!.kunReadings.join(", "),
-                      kanji!.onReadings.join(", "),
-                      kanji!.meanings.join(", "),
-                      "https://jisho.org/search/${kanji!.kanji}"
-                    ]
-                  : [
-                      word!.word.getText(),
-                      word!.word.getReading(),
-                      word!.definitions.join(", "),
-                      word!.definitions
-                          .map((definition) => definition.exampleSentence)
-                          .mapIndexed((idx, sentence) {
-                            return sentence == null
-                                ? null
-                                : "${idx + 1}. ${sentence.japanese.map((part) => "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '</b>' : ''}").join()}";
-                          })
-                          .toList()
-                          .whereType<String>()
-                          .join("<br><br>"),
-                      word!.definitions
-                          .map((definition) => definition.exampleSentence)
-                          .mapIndexed((idx, sentence) {
-                            return sentence == null
-                                ? null
-                                : "${idx + 1}. ${sentence.japanese.map((part) => "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}").join()}";
-                          })
-                          .toList()
-                          .whereType<String>()
-                          .join("<br><br>"),
-                      word!.definitions
-                          .map((definition) => definition.exampleSentence)
-                          .mapIndexed((idx, sentence) {
-                            return sentence == null
-                                ? null
-                                : "${idx + 1}. ${sentence.english}";
-                          })
-                          .toList()
-                          .whereType<String>()
-                          .join("<br><br>"),
-                      "https://jisho.org/word/${word!.id}"
-                    ];
+
+              List<String> fields = [];
+
+              switch (type) {
+                case "kanji":
+                  fields = [
+                    kanji!.kanji,
+                    kanji!.kunReadings.join(", "),
+                    kanji!.onReadings.join(", "),
+                    kanji!.meanings.join(", "),
+                    "https://jisho.org/search/${kanji!.kanji}"
+                  ];
+                  break;
+                case "word":
+                  fields = [
+                    word!.word.getText(),
+                    word!.word.getReading(),
+                    word!.definitions.join(", "),
+                    word!.definitions
+                        .map((definition) => definition.exampleSentence)
+                        .mapIndexed((idx, sentence) {
+                          return sentence == null
+                              ? null
+                              : "${idx + 1}. ${sentence.japanese.map((part) => "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '</b>' : ''}").join()}";
+                        })
+                        .toList()
+                        .whereType<String>()
+                        .join("<br><br>"),
+                    word!.definitions
+                        .map((definition) => definition.exampleSentence)
+                        .mapIndexed((idx, sentence) {
+                          return sentence == null
+                              ? null
+                              : "${idx + 1}. ${sentence.japanese.map((part) => "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}").join()}";
+                        })
+                        .toList()
+                        .whereType<String>()
+                        .join("<br><br>"),
+                    word!.definitions
+                        .map((definition) => definition.exampleSentence)
+                        .mapIndexed((idx, sentence) {
+                          return sentence == null
+                              ? null
+                              : "${idx + 1}. ${sentence.english}";
+                        })
+                        .toList()
+                        .whereType<String>()
+                        .join("<br><br>"),
+                    "https://jisho.org/word/${word!.id}"
+                  ];
+                  break;
+                case "sentence":
+                  fields = [
+                    sentence!.japanese.getText(),
+                    (sentence!.japanese
+                        .map((part) =>
+                            "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}")
+                        .join()),
+                    sentence!.english,
+                    "https://jisho.org/sentences/${sentence!.id}"
+                  ];
+                  break;
+                default:
+                  return;
+              }
+
+              String key = "";
+
+              switch (type) {
+                case "kanji":
+                  key = kanji!.kanji;
+                  break;
+                case "word":
+                  key = word!.word.getText();
+                  break;
+                case "sentence":
+                  key = sentence!.japanese.getText();
+                  break;
+                default:
+                  return;
+              }
 
               // Finally add or update the note
-              final dups = await anki.findDuplicateNotesWithKey(
-                  modelId, kanji != null ? kanji!.kanji : word!.word.getText());
+              final dups = await anki.findDuplicateNotesWithKey(modelId, key);
               if (dups.isValue) {
                 final dupsList = dups.asValue!.value;
-                final ourDups = dupsList.where((dup) => (dup["tags"] as List)
-                    .contains("${kanji != null ? 'kanji' : 'word'}_js-dict"));
+                final ourDups = dupsList.where(
+                    (dup) => (dup["tags"] as List).contains("${type}_js-dict"));
                 if (ourDups.isNotEmpty) {
                   ourDups.toList().forEach((dup) {
                     anki.updateNoteFields(dup["id"] as int, fields).then((res) {
@@ -121,20 +184,19 @@ class AnkiButton extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text(
-                                  "${kanji != null ? 'Kanji' : 'Word'} updated in JS-Dict deck.")),
+                                  "${type.capitalize()} updated in JS-Dict deck.")),
                         );
                       }
                     });
                   });
                 } else {
-                  anki.addNote(modelId, deckId, fields, [
-                    "${kanji != null ? 'kanji' : 'word'}_js-dict"
-                  ]).then((res) {
+                  anki.addNote(
+                      modelId, deckId, fields, ["${type}_js-dict"]).then((res) {
                     if (res.isValue) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text(
-                                "${kanji != null ? 'Kanji' : 'Word'} added to JS-Dict deck.")),
+                                "${type.capitalize()} added to JS-Dict deck.")),
                       );
                     }
                   });

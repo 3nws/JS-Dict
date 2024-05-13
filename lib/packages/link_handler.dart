@@ -5,7 +5,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:jsdict/packages/is_kanji.dart";
 import "package:jsdict/packages/navigation.dart";
-import "package:jsdict/packages/remove_tags.dart";
 import "package:jsdict/packages/transform.dart";
 import "package:jsdict/providers/query_provider.dart";
 import "package:jsdict/screens/kanji_details/kanji_details_screen.dart";

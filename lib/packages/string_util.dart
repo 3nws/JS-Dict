@@ -1,5 +1,6 @@
 /// Allows text breaking.
 const zeroWidthSpace = "\u200B";
+
 /// Prevents text breaking.
 const zeroWidthNoBreakSpace = "\uFEFF";
 
@@ -14,4 +15,8 @@ extension StringUtilsInternal on String {
   String get noBreak => split("")
       .join(zeroWidthNoBreakSpace)
       .replaceAll("$zeroWidthNoBreakSpace $zeroWidthNoBreakSpace", " ");
+
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
 }
