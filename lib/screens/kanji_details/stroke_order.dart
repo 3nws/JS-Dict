@@ -84,6 +84,7 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
           _controller.repeat();
 
           return ExpansionTileCard(
+            initiallyExpanded: true,
             shadowColor: Theme.of(context).colorScheme.shadow,
             title: const Text("Stroke Order"),
             children: [
