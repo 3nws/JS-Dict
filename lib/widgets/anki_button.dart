@@ -83,7 +83,7 @@ class AnkiButton extends StatelessWidget {
                           })
                           .toList()
                           .whereType<String>()
-                          .join("\n\n"),
+                          .join("<br><br>"),
                       word!.definitions
                           .map((definition) => definition.exampleSentence)
                           .mapIndexed((idx, sentence) {
@@ -93,17 +93,17 @@ class AnkiButton extends StatelessWidget {
                           })
                           .toList()
                           .whereType<String>()
-                          .join("\n\n"),
+                          .join("<br><br>"),
                       word!.definitions
                           .map((definition) => definition.exampleSentence)
                           .mapIndexed((idx, sentence) {
                             return sentence == null
                                 ? null
-                                : "${idx + 1}. ${sentence.english}\n";
+                                : "${idx + 1}. ${sentence.english}";
                           })
                           .toList()
                           .whereType<String>()
-                          .join("\n\n"),
+                          .join("<br><br>"),
                       "https://jisho.org/word/${word!.id}"
                     ];
 
@@ -142,7 +142,6 @@ class AnkiButton extends StatelessWidget {
               }
             }
           }
-          // anki.killIsolate();
         },
         icon: SvgPicture.asset(
           "assets/anki-icon.svg",

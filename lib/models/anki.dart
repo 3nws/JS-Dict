@@ -28,7 +28,7 @@ class AnkiWordModel extends AnkiModel {
   List<String> cards = ["Japanese > English"];
 
   @override
-  List<String> qfmt = ["""{{Japanese}}"""];
+  List<String> qfmt = ["""<div id="kanji">{{Japanese}}</div>"""];
 
   @override
   List<String> afmt = [
@@ -37,7 +37,7 @@ class AnkiWordModel extends AnkiModel {
 
   @override
   String css =
-      """.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n} b { font-weight: 600; } .jpsentence { font-size: 35px; }""";
+      """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n} b { font-weight: 600; } .jpsentence { font-size: 35px; }""";
 }
 
 class AnkiKanjiModel extends AnkiModel {
@@ -57,7 +57,7 @@ class AnkiKanjiModel extends AnkiModel {
   List<String> cards = ["Kanji"];
 
   @override
-  List<String> qfmt = ["""{{Kanji}}"""];
+  List<String> qfmt = ["""<div id="kanji">{{Kanji}}</div>"""];
 
   @override
   List<String> afmt = [
@@ -66,5 +66,5 @@ class AnkiKanjiModel extends AnkiModel {
 
   @override
   String css =
-      """.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n}""";
+      """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n}""";
 }
