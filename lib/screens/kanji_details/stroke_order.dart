@@ -2,11 +2,12 @@ import "package:expansion_tile_card/expansion_tile_card.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
-import "package:gif/gif.dart";
 import "package:jsdict/packages/kanji_diagram/kanji_diagram.dart";
 import "package:jsdict/providers/theme_provider.dart";
 import "package:jsdict/widgets/loader.dart";
+import "package:path_drawing/path_drawing.dart";
 import "package:provider/provider.dart";
+import "package:xml/xml.dart";
 
 class StrokeOrderWidget extends StatefulWidget {
   const StrokeOrderWidget(this.kanjiCode, this.kanjiGifFilename, {super.key});
@@ -19,16 +20,7 @@ class StrokeOrderWidget extends StatefulWidget {
 }
 
 class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
-    with TickerProviderStateMixin {
-  late GifController _controller;
-  int _fps = 30;
-
-  @override
-  void initState() {
-    _controller = GifController(vsync: this);
-    super.initState();
-  }
-
+    with SingleTickerProviderStateMixin {
   Future<String> getData() async {
     try {
       return await rootBundle
@@ -39,20 +31,29 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
     }
   }
 
-  Future<ByteData> getStrokeGIF() async {
-    try {
-      return await NetworkAssetBundle(Uri.parse(
-              "https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${widget.kanjiGifFilename}.gif"))
-          .load("");
-    } on FlutterError {
-      return ByteData(0);
-    }
+  late List<String> paths;
+  late AnimationController _controller;
+  late List<Animation<double>> _animations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  String cleanPath(XmlElement path) {
+    path.removeAttribute("id");
+    path.removeAttribute("kvg:type");
+    return path.attributes.first.value;
   }
 
   @override
@@ -63,6 +64,25 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
           if (data.isEmpty) {
             return const SizedBox();
           }
+          paths = XmlDocument.parse(data)
+              .descendantElements
+              .where((element) => element.name.local == "path")
+              .map(cleanPath)
+              .toList();
+          _animations = List.generate(paths.length, (index) {
+            return Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Interval(
+                  index / paths.length,
+                  (index + 1) / paths.length,
+                  curve: Curves.easeInOut,
+                ),
+              ),
+            );
+          });
+          _controller.repeat();
+
           return ExpansionTileCard(
             shadowColor: Theme.of(context).colorScheme.shadow,
             title: const Text("Stroke Order"),
@@ -75,46 +95,24 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
                             .create(data),
                         height: 90);
                   })),
-              LoaderWidget(
-                  onLoad: getStrokeGIF,
-                  handler: (data) {
-                    return (data.lengthInBytes != 0)
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  _controller.reset();
-                                  _controller.forward();
-                                },
-                                child: Gif(
-                                  image: MemoryImage(data.buffer.asUint8List()),
-                                  controller: _controller,
-                                  fps: _fps,
-                                  autostart: Autostart.loop,
-                                  onFetchCompleted: () {
-                                    _controller.reset();
-                                    _controller.forward();
-                                  },
-                                ),
-                              ),
-                              RotatedBox(
-                                quarterTurns: -1,
-                                child: Slider(
-                                    label: _fps.toString(),
-                                    value: _fps.toDouble(),
-                                    min: 1,
-                                    max: 60,
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _fps = v.round();
-                                      });
-                                    }),
-                              )
-                            ],
-                          )
-                        : const SizedBox.shrink();
-                  })
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    alignment: Alignment.topLeft,
+                    child: AbsorbPointer(
+                      child: CustomPaint(
+                        painter: AnimatedPathsPainter(
+                            paths: paths,
+                            animations: _animations,
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           );
         });
@@ -147,5 +145,44 @@ class BrightnessBuilder extends StatelessWidget {
               builder: (context) => builder(context,
                   getBrightness(context, themeProvider.currentTheme))));
     });
+  }
+}
+
+class AnimatedPathsPainter extends CustomPainter {
+  final List<String> paths;
+  final List<Animation<double>> animations;
+  final Color color;
+
+  AnimatedPathsPainter(
+      {required this.paths, required this.animations, required this.color})
+      : super(repaint: animations[animations.length - 1]);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5.0;
+
+    for (int i = 0; i < paths.length; i++) {
+      final path = Path();
+      path.addPath(
+          parseSvgPathData(paths[i]), Offset(size.width / 2, size.height / 2));
+      final progress = animations[i].value;
+      final currentPath = extractPath(path, progress);
+      canvas.drawPath(currentPath, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+
+  Path extractPath(Path originalPath, double lengthPercentage) {
+    final totalLength = originalPath.computeMetrics().single.length;
+    final currentLength = totalLength * lengthPercentage;
+    final metric = originalPath.computeMetrics().single;
+    return metric.extractPath(0, currentLength);
   }
 }
