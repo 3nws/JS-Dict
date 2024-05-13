@@ -21,6 +21,7 @@ class AnkiWordModel extends AnkiModel {
     "SentKanji",
     "SentFurigana",
     "SentenceMeaning",
+    "Audio",
     "Link"
   ];
 
@@ -32,7 +33,7 @@ class AnkiWordModel extends AnkiModel {
 
   @override
   List<String> afmt = [
-    """{{FrontSide}}\n\n<hr id=answer>\n\n{{Reading}}\n\n<br><br>{{Meaning}}\n\n<br><br><div class="jpsentence" lang="ja">\n{{edit:furigana:SentFurigana}}\n{{^SentFurigana}}\n{{furigana:SentKanji}}{{/SentFurigana}}</div>\n\n<br><br>{{SentenceMeaning}}<br><br>{{#Link}}<a href="{{Link}}">Open in JS-Dict</a>{{/Link}}""",
+    """{{FrontSide}}\n\n<hr id=answer>\n\n{{Reading}}\n\n<br><br>{{Meaning}}\n\n<br><br>{{Audio}}\n\n<br><br><div class="jpsentence" lang="ja">\n{{edit:furigana:SentFurigana}}\n{{^SentFurigana}}\n{{furigana:SentKanji}}{{/SentFurigana}}</div>\n\n<br><br>{{SentenceMeaning}}<br><br>{{#Link}}<a href="{{Link}}">Open in JS-Dict</a>{{/Link}}""",
   ];
 
   @override

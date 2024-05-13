@@ -137,6 +137,9 @@ class AnkiButton extends StatelessWidget {
                         .toList()
                         .whereType<String>()
                         .join("<br><br>"),
+                    word!.audioUrl == null
+                        ? ""
+                        : "<audio controls src='${word!.audioUrl}'></audio>",
                     "https://jisho.org/word/${word!.id}"
                   ];
                   break;
