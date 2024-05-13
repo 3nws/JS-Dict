@@ -42,6 +42,15 @@ class AnkiButton extends StatelessWidget {
             return;
           }
 
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      "Please wait while the ${type.capitalize()} is being added to the JS-Dict deck.")),
+            );
+          }
+
           final decks = await anki.deckList();
           if (decks.isValue) {
             Result<int> res;
@@ -192,10 +201,11 @@ class AnkiButton extends StatelessWidget {
                   ourDups.toList().forEach((dup) {
                     anki.updateNoteFields(dup["id"] as int, fields).then((res) {
                       if (res.isValue) {
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text(
-                                  "${type.capitalize()} updated in JS-Dict deck.")),
+                                  "${type.capitalize()} updated in the JS-Dict deck.")),
                         );
                       }
                     });
@@ -204,10 +214,11 @@ class AnkiButton extends StatelessWidget {
                   anki.addNote(
                       modelId, deckId, fields, ["${type}_js-dict"]).then((res) {
                     if (res.isValue) {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text(
-                                "${type.capitalize()} added to JS-Dict deck.")),
+                                "${type.capitalize()} added to the JS-Dict deck.")),
                       );
                     }
                   });
