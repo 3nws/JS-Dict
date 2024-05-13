@@ -141,6 +141,10 @@ class AnkiButton extends StatelessWidget {
                   ];
                   break;
                 case "sentence":
+                  final List<Kanji> sentenceKanji = sentence!.kanji ??
+                      (await getClient()
+                              .search<Kanji>(sentence!.japanese.getText()))
+                          .results;
                   fields = [
                     sentence!.japanese.getText(),
                     (sentence!.japanese
@@ -148,6 +152,10 @@ class AnkiButton extends StatelessWidget {
                             "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}")
                         .join()),
                     sentence!.english,
+                    sentenceKanji
+                        .map((kanji) =>
+                            "<a href='https://jisho.org/search/${kanji.kanji}' class='kanji'><b>${kanji.kanji}</b></a>\n\n<br><br>")
+                        .join(),
                     "https://jisho.org/sentences/${sentence!.id}"
                   ];
                   break;
