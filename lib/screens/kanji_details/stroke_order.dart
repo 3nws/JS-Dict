@@ -1,3 +1,4 @@
+import "package:collection/collection.dart";
 import "package:expansion_tile_card/expansion_tile_card.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -10,10 +11,9 @@ import "package:provider/provider.dart";
 import "package:xml/xml.dart";
 
 class StrokeOrderWidget extends StatefulWidget {
-  const StrokeOrderWidget(this.kanjiCode, this.kanjiGifFilename, {super.key});
+  const StrokeOrderWidget(this.kanjiCode, {super.key});
 
   final String kanjiCode;
-  final String kanjiGifFilename;
 
   @override
   State<StrokeOrderWidget> createState() => _StrokeOrderWidgetState();
@@ -69,6 +69,9 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
               .where((element) => element.name.local == "path")
               .map(cleanPath)
               .toList();
+          final secondsCalcd = List.generate(
+              paths.length, (index) => (paths[index].length / 100).round()).sum;
+          _controller.duration = Duration(seconds: secondsCalcd);
           _animations = List.generate(paths.length, (index) {
             return Tween<double>(begin: 0.0, end: 1.0).animate(
               CurvedAnimation(
@@ -100,8 +103,8 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                     alignment: Alignment.topLeft,
                     child: AbsorbPointer(
                       child: CustomPaint(

@@ -215,7 +215,7 @@ class _KanjiDetailsWidget extends StatelessWidget {
         if (kanjiDetails.variants.isNotEmpty)
           _VariantsWidget(kanjiDetails.variants),
         StrokeOrderWidget(
-            kanji.code, kanji.kanji.codeUnitAt(0).toRadixString(16)),
+            kanji.code),
         if (kanjiDetails.onCompounds.isNotEmpty)
           CompoundList("On", kanjiDetails.onCompounds),
         const SizedBox(height: 4),
