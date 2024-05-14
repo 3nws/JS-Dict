@@ -34,13 +34,15 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
   late List<String> paths;
   late AnimationController _controller;
   late List<Animation<double>> _animations;
+  late List<double> _pathLengths;
+  late List<double> _durations;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 5),
     );
   }
 
@@ -69,16 +71,27 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
               .where((element) => element.name.local == "path")
               .map(cleanPath)
               .toList();
-          final secondsCalcd = List.generate(
-              paths.length, (index) => (paths[index].length / 100).round()).sum;
-          _controller.duration = Duration(seconds: secondsCalcd);
+
+          _pathLengths = paths.map((pathData) {
+            final path = parseSvgPathData(pathData);
+            final pathMetric = path.computeMetrics().first;
+            return pathMetric.length;
+          }).toList();
+
+          _durations = _pathLengths
+              .map((length) => (length / _pathLengths.sum) * 5.0)
+              .toList();
+
           _animations = List.generate(paths.length, (index) {
+            final start =
+                _durations.sublist(0, index).fold(0.0, (a, b) => a + b) / 5.0;
+            final end = start + (_durations[index] / 5.0);
             return Tween<double>(begin: 0.0, end: 1.0).animate(
               CurvedAnimation(
                 parent: _controller,
                 curve: Interval(
-                  index / paths.length,
-                  (index + 1) / paths.length,
+                  start,
+                  end,
                   curve: Curves.easeInOut,
                 ),
               ),
