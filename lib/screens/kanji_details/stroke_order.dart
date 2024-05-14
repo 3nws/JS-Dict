@@ -2,6 +2,7 @@ import "package:collection/collection.dart";
 import "package:expansion_tile_card/expansion_tile_card.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter/widgets.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:jsdict/packages/kanji_diagram/kanji_diagram.dart";
 import "package:jsdict/providers/theme_provider.dart";
@@ -36,13 +37,15 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
   late List<Animation<double>> _animations;
   late List<double> _pathLengths;
   late List<double> _durations;
+  int _seconds = 5;
+  IconData playPauseIcon = Icons.pause;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: Duration(seconds: _seconds),
     );
   }
 
@@ -97,7 +100,12 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
               ),
             );
           });
-          _controller.repeat();
+
+          if (playPauseIcon == Icons.pause) {
+            _controller.repeat();
+          } else {
+            _controller.stop();
+          }
 
           return ExpansionTileCard(
             initiallyExpanded: true,
@@ -128,6 +136,51 @@ class _StrokeOrderWidgetState extends State<StrokeOrderWidget>
                       ),
                     ),
                   ),
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (playPauseIcon == Icons.pause) {
+                                    playPauseIcon = Icons.play_arrow;
+                                    _controller.stop();
+                                  } else {
+                                    playPauseIcon = Icons.pause;
+                                    _controller.forward();
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                playPauseIcon,
+                                color: Theme.of(context).colorScheme.primary,
+                              )),
+                          IconButton(
+                              onPressed: () {
+                                _controller.reset();
+                                _controller.forward();
+                              },
+                              icon: Icon(
+                                Icons.restart_alt,
+                                color: Theme.of(context).colorScheme.primary,
+                              )),
+                        ],
+                      ),
+                      Slider(
+                          label: _seconds.toString(),
+                          value: 10 - _seconds.toDouble(),
+                          min: 0,
+                          max: 9,
+                          onChanged: (v) {
+                            setState(() {
+                              _seconds = 10 - v.round();
+                              _controller.duration =
+                                  Duration(seconds: _seconds);
+                            });
+                          }),
+                    ],
+                  )
                 ],
               ),
             ],
