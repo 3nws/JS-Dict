@@ -2,7 +2,7 @@ name: jsdict
 description: A new Flutter project.
 publish_to: 'none'
 
-version: 1.2.9+30
+version: 1.3.0+31
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -38,6 +38,8 @@ dependencies:
     git:
       url: https://github.com/3nws/flutter_ankidroid
   path_drawing: ^1.0.1
+  flutter_tesseract_ocr: ^0.4.24
+  image_picker: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -60,3 +62,12 @@ flutter:
     - assets/kanjivg/LICENSE.kanjivg.txt
     - assets/kanjivg/data/
     - assets/anki-icon.svg
+    - path: assets/tessdata_config.json
+      flavors:
+        - ocr
+    - path: assets/tessdata/jpn.traineddata
+      flavors:
+        - ocr
+    - path: assets/tessdata/jpn_vert.traineddata
+      flavors:
+        - ocr

@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_tesseract_ocr/android_ios.dart";
+import "package:image_picker/image_picker.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
 import "package:jsdict/packages/link_handler.dart";
@@ -13,6 +16,7 @@ import "package:jsdict/screens/search_options/history_selection_screen.dart";
 import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
 import "package:jsdict/screens/settings_screen.dart";
+import "package:jsdict/widgets/items/extracted_text_item.dart";
 import "package:provider/provider.dart";
 
 class SearchScreen extends StatefulWidget {
@@ -31,6 +35,7 @@ class _SearchScreenState extends State<SearchScreen>
   late LinkHandler _linkHandler;
   late ShareIntentHandler _shareIntentHandler;
   late FocusNode _searchFocusNode;
+  final ImagePicker picker = ImagePicker();
 
   @override
   void initState() {
@@ -51,34 +56,116 @@ class _SearchScreenState extends State<SearchScreen>
     super.dispose();
   }
 
+  void processImage(BuildContext context, XFile? image) async {
+    if (image == null) return;
+    final List<String> models = ["jpn_vert", "jpn"];
+    final List<ExtractedTextItem> items = [];
+    for (final model in models) {
+      final String text = await FlutterTesseractOcr.extractText(
+        image.path,
+        language: model,
+      );
+      if (text.isNotEmpty) {
+        items.add(ExtractedTextItem(text: text));
+      }
+    }
+    if (items.isEmpty && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No matches."),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+    if (!context.mounted) return;
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.separated(
+            itemCount: items.length,
+            controller: scrollController,
+            itemBuilder: (context, index) => items[index],
+            separatorBuilder: (context, index) {
+              return const Divider();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
     final searchController = queryProvider.searchController;
     final canvasProvider = CanvasProvider.of(context);
 
+    final List<Widget> ocrFlavorWidgets = appFlavor == "ocr"
+        ? [
+            FloatingActionButton(
+              onPressed: () async {
+                final XFile? image = await picker.pickImage(
+                    source: ImageSource.gallery, imageQuality: 100);
+                if (!context.mounted) return;
+                processImage(context, image);
+              },
+              tooltip: "Image Search",
+              heroTag: "imagesearch",
+              child: const Icon(Icons.image),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            FloatingActionButton(
+              onPressed: () async {
+                final XFile? image = await picker.pickImage(
+                    source: ImageSource.camera, imageQuality: 100);
+                if (!context.mounted) return;
+                processImage(context, image);
+              },
+              tooltip: "Camera Search",
+              heroTag: "camerasearch",
+              child: const Icon(Icons.camera_alt),
+            ),
+            const SizedBox(
+              height: 10,
+            )
+          ]
+        : [];
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: pushScreen(context, const RadicalSearchScreen()),
-            tooltip: "Radicals",
-            heroTag: "radicals",
-            child: const Text("部", style: TextStyle(fontSize: 20)),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          FloatingActionButton(
-            onPressed: pushScreen(
-                context, HandwritingSearchScreen(back: canvasProvider.back)),
-            tooltip: "Handwriting",
-            heroTag: "handwriting",
-            child: const Icon(Icons.draw_outlined),
-          ),
-        ],
+      floatingActionButton: Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ...ocrFlavorWidgets,
+            FloatingActionButton(
+              onPressed: pushScreen(
+                  context, HandwritingSearchScreen(back: canvasProvider.back)),
+              tooltip: "Handwriting",
+              heroTag: "handwriting",
+              child: const Icon(Icons.draw_outlined),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            FloatingActionButton(
+              onPressed: pushScreen(context, const RadicalSearchScreen()),
+              tooltip: "Radicals",
+              heroTag: "radicals",
+              child: const Text("部", style: TextStyle(fontSize: 20)),
+            ),
+          ],
+        ),
       ),
       appBar: AppBar(
         title: TextField(

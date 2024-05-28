@@ -12,15 +12,13 @@ Japanese-English dictionary app powered by Jisho.org.
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img alt="License: GPLv3" src="https://img.shields.io/badge/license-GPLv3-red.svg?style=flat-square"></a>
 </div>
 
-## Screenshots
+## OCR
 
-[<img src="metadata/en-US/images/phoneScreenshots/01.png" width="160">](metadata/en-US/images/phoneScreenshots/01.png)
-[<img src="metadata/en-US/images/phoneScreenshots/02.png" width="160">](metadata/en-US/images/phoneScreenshots/02.png)
-[<img src="metadata/en-US/images/phoneScreenshots/03.png" width="160">](metadata/en-US/images/phoneScreenshots/03.png)
-[<img src="metadata/en-US/images/phoneScreenshots/04.png" width="160">](metadata/en-US/images/phoneScreenshots/04.png)
-[<img src="metadata/en-US/images/phoneScreenshots/05.png" width="160">](metadata/en-US/images/phoneScreenshots/05.png)
-[<img src="metadata/en-US/images/phoneScreenshots/06.png" width="160">](metadata/en-US/images/phoneScreenshots/06.png)
-[<img src="metadata/en-US/images/phoneScreenshots/07.png" width="160">](metadata/en-US/images/phoneScreenshots/07.png)
+Download and place the necessary models in `assets/tessdata/`, and build using the `ocr` flavor.
+
+Files:
+- https://github.com/tesseract-ocr/tessdata/blob/main/jpn.traineddata
+- https://github.com/tesseract-ocr/tessdata/blob/main/jpn_vert.traineddata
 
 ## License
 

@@ -64,7 +64,7 @@ class _KanjiSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).textTheme.bodyLarge!.color;
-    final backgroundColor = Theme.of(context).colorScheme.surfaceVariant;
+    final backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     return Consumer<CanvasProvider>(
         builder: (_, provider, __) => provider.matchingKanji.isEmpty
