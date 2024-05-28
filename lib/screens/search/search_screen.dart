@@ -66,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen>
         language: model,
       );
       if (text.isNotEmpty) {
-        items.add(ExtractedTextItem(text: text));
+        items.add(ExtractedTextItem(text: text.replaceAll(" ", "")));
       }
     }
     if (items.isEmpty && context.mounted) {
