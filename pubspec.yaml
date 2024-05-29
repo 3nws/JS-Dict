@@ -38,7 +38,9 @@ dependencies:
     git:
       url: https://github.com/3nws/flutter_ankidroid
   path_drawing: ^1.0.1
-  flutter_tesseract_ocr: ^0.4.24
+  flutter_tesseract_ocr:
+    git:
+      url: https://github.com/3nws/tesseract_ocr
   image_picker: ^1.1.1
 
 dev_dependencies:

@@ -9,28 +9,14 @@ class ImageSearch {
     final XFile? image =
         await ImagePicker().pickImage(source: source, imageQuality: 100);
     if (!context.mounted || image == null) return;
-    processImage(context, image);
-  }
-
-  static Future<void> processImage(BuildContext context, XFile image) async {
-    final List<String> models = ["jpn_vert", "jpn"];
-    final List<ExtractedTextItem> items = [];
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Processing... Please wait."),
         duration: Duration(minutes: 2),
       ),
     );
-    for (final model in models) {
-      final String text = await FlutterTesseractOcr.extractText(
-        image.path,
-        language: model,
-      );
-      if (text.isNotEmpty) {
-        items.add(ExtractedTextItem(text: text.replaceAll(" ", "")));
-      }
-    }
-    if (items.isEmpty && context.mounted) {
+    final List<String>? texts = await processImage(image.path);
+    if (texts == null && context.mounted) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -38,7 +24,12 @@ class ImageSearch {
           duration: Duration(seconds: 1),
         ),
       );
-      return;
+    }
+    final List<ExtractedTextItem> items = [];
+    if (texts != null) {
+      for (final text in texts) {
+        items.add(ExtractedTextItem(text: text));
+      }
     }
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -61,5 +52,23 @@ class ImageSearch {
         ),
       ),
     );
+  }
+
+  static Future<List<String>?> processImage(String imagePath) async {
+    final List<String> models = ["jpn_vert", "jpn"];
+    final List<String> texts = [];
+    for (final model in models) {
+      final String text = await FlutterTesseractOcr.extractText(
+        imagePath,
+        language: model,
+      );
+      if (text.isNotEmpty) {
+        texts.add(text.replaceAll(" ", ""));
+      }
+    }
+    if (texts.isEmpty) {
+      return null;
+    }
+    return texts;
   }
 }

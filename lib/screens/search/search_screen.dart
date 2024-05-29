@@ -3,7 +3,7 @@ import "package:flutter/services.dart";
 import "package:image_picker/image_picker.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
-import "package:jsdict/packages/image_search.dart";
+import "package:jsdict/packages/image_search/image_search.dart";
 import "package:jsdict/packages/link_handler.dart";
 import "package:jsdict/packages/navigation.dart";
 import "package:jsdict/packages/process_text_intent_handler.dart";
