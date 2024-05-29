@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_tesseract_ocr/android_ios.dart";
 import "package:image_picker/image_picker.dart";
 import "package:jsdict/jp_text.dart";
 import "package:jsdict/models/models.dart";
+import "package:jsdict/packages/image_search.dart";
 import "package:jsdict/packages/link_handler.dart";
 import "package:jsdict/packages/navigation.dart";
 import "package:jsdict/packages/process_text_intent_handler.dart";
@@ -16,7 +16,6 @@ import "package:jsdict/screens/search_options/history_selection_screen.dart";
 import "package:jsdict/screens/search_options/radical_search_screen.dart";
 import "package:jsdict/screens/search_options/tag_selection_screen.dart";
 import "package:jsdict/screens/settings_screen.dart";
-import "package:jsdict/widgets/items/extracted_text_item.dart";
 import "package:provider/provider.dart";
 
 class SearchScreen extends StatefulWidget {
@@ -56,50 +55,6 @@ class _SearchScreenState extends State<SearchScreen>
     super.dispose();
   }
 
-  void processImage(BuildContext context, XFile? image) async {
-    if (image == null) return;
-    final List<String> models = ["jpn_vert", "jpn"];
-    final List<ExtractedTextItem> items = [];
-    for (final model in models) {
-      final String text = await FlutterTesseractOcr.extractText(
-        image.path,
-        language: model,
-      );
-      if (text.isNotEmpty) {
-        items.add(ExtractedTextItem(text: text.replaceAll(" ", "")));
-      }
-    }
-    if (items.isEmpty && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("No matches."),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      return;
-    }
-    if (!context.mounted) return;
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-        builder: (context, scrollController) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.separated(
-            itemCount: items.length,
-            controller: scrollController,
-            itemBuilder: (context, index) => items[index],
-            separatorBuilder: (context, index) {
-              return const Divider();
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
@@ -109,12 +64,8 @@ class _SearchScreenState extends State<SearchScreen>
     final List<Widget> ocrFlavorWidgets = appFlavor == "ocr"
         ? [
             FloatingActionButton(
-              onPressed: () async {
-                final XFile? image = await picker.pickImage(
-                    source: ImageSource.gallery, imageQuality: 100);
-                if (!context.mounted) return;
-                processImage(context, image);
-              },
+              onPressed: () =>
+                  ImageSearch.pickImage(context, ImageSource.gallery),
               tooltip: "Image Search",
               heroTag: "imagesearch",
               child: const Icon(Icons.image),
@@ -123,12 +74,8 @@ class _SearchScreenState extends State<SearchScreen>
               height: 10,
             ),
             FloatingActionButton(
-              onPressed: () async {
-                final XFile? image = await picker.pickImage(
-                    source: ImageSource.camera, imageQuality: 100);
-                if (!context.mounted) return;
-                processImage(context, image);
-              },
+              onPressed: () =>
+                  ImageSearch.pickImage(context, ImageSource.camera),
               tooltip: "Camera Search",
               heroTag: "camerasearch",
               child: const Icon(Icons.camera_alt),
