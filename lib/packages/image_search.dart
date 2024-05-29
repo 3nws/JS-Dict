@@ -4,20 +4,23 @@ import "package:image_picker/image_picker.dart";
 import "package:jsdict/widgets/items/extracted_text_item.dart";
 
 class ImageSearch {
-  static Future<void> pickImage(BuildContext context, ImageSource source) async {
+  static Future<void> pickImage(
+      BuildContext context, ImageSource source) async {
     final XFile? image =
         await ImagePicker().pickImage(source: source, imageQuality: 100);
-    if (!context.mounted) return;
+    if (!context.mounted || image == null) return;
     processImage(context, image);
   }
 
-  static Future<void> processImage(BuildContext context, XFile? image) async {
-    if (image == null) return;
-    final List<String> models = [
-      "jpn_vert",
-      "jpn"
-    ];
+  static Future<void> processImage(BuildContext context, XFile image) async {
+    final List<String> models = ["jpn_vert", "jpn"];
     final List<ExtractedTextItem> items = [];
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Processing... Please wait."),
+        duration: Duration(minutes: 2),
+      ),
+    );
     for (final model in models) {
       final String text = await FlutterTesseractOcr.extractText(
         image.path,
@@ -28,6 +31,7 @@ class ImageSearch {
       }
     }
     if (items.isEmpty && context.mounted) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("No matches."),
@@ -37,6 +41,7 @@ class ImageSearch {
       return;
     }
     if (!context.mounted) return;
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
