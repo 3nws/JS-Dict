@@ -1,3 +1,5 @@
+import "package:android_intent_plus/android_intent.dart";
+import "package:app_settings/app_settings.dart";
 import "package:async/async.dart";
 import "package:collection/collection.dart";
 import "package:flutter/material.dart";
@@ -6,6 +8,7 @@ import "package:flutter_svg/flutter_svg.dart";
 import "package:jsdict/models/models.dart";
 import "package:jsdict/packages/string_util.dart";
 import "package:jsdict/singletons.dart";
+import "package:appcheck/appcheck.dart";
 
 class AnkiButton extends StatelessWidget {
   final Word? word;
@@ -202,11 +205,43 @@ class AnkiButton extends StatelessWidget {
           final version = await anki.apiHostSpecVersion();
           final object = kanji ?? word ?? sentence;
           if (version.isError) {
+            String label;
+            String message;
+            void Function() callback;
+            if (!(await AppCheck.isAppInstalled("com.ichi2.anki"))) {
+              label = "Install";
+              message = "AnkiDroid is not installed!";
+              callback = () async {
+                const AndroidIntent intent = AndroidIntent(
+                    action: "action_view",
+                    data:
+                        "https://play.google.com/store/apps/details?id=com.ichi2.anki");
+                await intent.launch();
+              };
+            } else if (!(await AppCheck.isAppEnabled("com.ichi2.anki"))) {
+              label = "Enable";
+              message = "AnkiDroid is disabled!";
+              callback = () async {
+                const AndroidIntent intent = AndroidIntent(
+                  action: "action_application_details_settings",
+                  data: "package:com.ichi2.anki",
+                );
+                await intent.launch();
+              };
+            } else {
+              label = "Settings";
+              message =
+                  "AnkiDroid API isn't available or you haven't granted permission.";
+              callback = () => AppSettings.openAppSettings();
+            }
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text(
-                        "You haven't given permission to write to AnkiDroid or the API isn't available. Is AnkiDroid installed?")),
+                SnackBar(
+                    action: SnackBarAction(
+                      label: label,
+                      onPressed: callback,
+                    ),
+                    content: Text(message)),
               );
             }
             return;

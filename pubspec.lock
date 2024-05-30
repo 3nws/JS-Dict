@@ -17,6 +17,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.1"
+  android_intent_plus:
+    dependency: "direct main"
+    description:
+      name: android_intent_plus
+      sha256: "2bfdbee8d65e7c26f88b66f0a91f2863da4d3596d8a658b4162c8de5cf04b074"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
+  app_settings:
+    dependency: "direct main"
+    description:
+      name: app_settings
+      sha256: "09bc7fe0313a507087bec1a3baf555f0576e816a760cbb31813a88890a09d9e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.1"
+  appcheck:
+    dependency: "direct main"
+    description:
+      name: appcheck
+      sha256: "2682c9c270c28d83f8d87d68bb607a83882778b14c6a8da19df423be1b386520"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   archive:
     dependency: transitive
     description:
@@ -291,7 +315,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "58c191683bf43271ba5c7a222dbc2b116722c1cb"
+      resolved-ref: "6e399aed2a7701f83a6e2a47ad377102fa99c1ef"
       url: "https://github.com/3nws/flutter_ankidroid"
     source: git
     version: "0.8.1"
