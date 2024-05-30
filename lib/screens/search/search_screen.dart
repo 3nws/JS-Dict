@@ -34,7 +34,6 @@ class _SearchScreenState extends State<SearchScreen>
   late LinkHandler _linkHandler;
   late ShareIntentHandler _shareIntentHandler;
   late FocusNode _searchFocusNode;
-  final ImagePicker picker = ImagePicker();
 
   @override
   void initState() {
