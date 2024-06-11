@@ -24,14 +24,36 @@ class _HistorySelectionState extends State<_HistorySelection> {
       children: [
         ListTile(
           title: const Text("Recent searches"),
-          trailing: GestureDetector(
-            onTap: () {
-              queryProvider.clearHistory();
-              setState(() {});
-            },
-            child: const Text(
-              "CLEAR",
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          trailing: IntrinsicHeight(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    queryProvider.clearHistory();
+                    setState(() {});
+                  },
+                  child: const Text(
+                    "CLEAR",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const VerticalDivider(
+                  thickness: 3,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    queryProvider.syncHistory();
+                    setState(() {});
+                  },
+                  child: const Text(
+                    "SYNC ALL",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -14,6 +14,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final TextEditingController _urlController = TextEditingController();
+  final TextEditingController _bulkUrlController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -21,6 +22,7 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     super.initState();
     _urlController.text = getPreferences().getString("syncUrl") ?? "";
+    _bulkUrlController.text = getPreferences().getString("syncBulkUrl") ?? "";
     _emailController.text = getPreferences().getString("syncEmail") ?? "";
     _passwordController.text = getPreferences().getString("syncPassword") ?? "";
   }
@@ -67,13 +69,20 @@ class _SettingScreenState extends State<SettingScreen> {
                         builder: (context) => AlertDialog(
                           title:
                               const Text("Enter the address of your server:"),
-                          content: Wrap(
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               TextField(
                                   controller: _urlController,
                                   decoration: const InputDecoration(
                                       label: Text(
                                           "Post req. path (ex. https://domain.com/api/record)"),
+                                      icon: Icon(Icons.computer))),
+                              TextField(
+                                  controller: _bulkUrlController,
+                                  decoration: const InputDecoration(
+                                      label: Text(
+                                          "Post req. bulk path (ex. https://domain.com/api/record/bulk)"),
                                       icon: Icon(Icons.computer))),
                               TextField(
                                   controller: _emailController,
@@ -91,6 +100,20 @@ class _SettingScreenState extends State<SettingScreen> {
                           actions: [
                             TextButton(
                               onPressed: () {
+                                getPreferences().remove("syncUrl");
+                                _urlController.text = "";
+                                getPreferences().remove("syncBulkUrl");
+                                _bulkUrlController.text = "";
+                                getPreferences().remove("syncEmail");
+                                _emailController.text = "";
+                                getPreferences().remove("syncPassword");
+                                _passwordController.text = "";
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("RESET"),
+                            ),
+                            TextButton(
+                              onPressed: () {
                                 Navigator.of(context).pop();
                               },
                               child: const Text("CANCEL"),
@@ -99,6 +122,8 @@ class _SettingScreenState extends State<SettingScreen> {
                               onPressed: () {
                                 getPreferences()
                                     .setString("syncUrl", _urlController.text);
+                                getPreferences().setString(
+                                    "syncBulkUrl", _bulkUrlController.text);
                                 getPreferences().setString(
                                     "syncEmail", _emailController.text);
                                 getPreferences().setString(

@@ -80,6 +80,10 @@ class QueryProvider extends ChangeNotifier {
     getHistorySync().sendQuery(text);
   }
 
+  void syncHistory() {
+    getHistorySync().sendHistory(history);
+  }
+
   void clearHistory() {
     _preferences.remove(_historyKey);
     searchController.text = "";

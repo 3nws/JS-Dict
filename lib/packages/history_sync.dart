@@ -6,6 +6,7 @@ import "package:jsdict/singletons.dart";
 
 class HistorySync {
   String url = getPreferences().getString("syncUrl") ?? "";
+  String bulkUrl = getPreferences().getString("syncBulkUrl") ?? "";
 
   final http.Client _client;
 
@@ -13,15 +14,16 @@ class HistorySync {
 
   HistorySync.client(http.Client client) : _client = client;
 
-  Future<bool> _post(String query) async {
+  Future<bool> _post(Map<String, dynamic> data, {bool bulk = false}) async {
     try {
-      final response = await _client.post(Uri.parse(url.trim()),
-          headers: {
-            "Content-Type": "application/json",
-            "email": getPreferences().getString("syncEmail") ?? "",
-            "password": getPreferences().getString("syncPassword") ?? ""
-          },
-          body: json.encode({"text": query}));
+      final response =
+          await _client.post(Uri.parse(!bulk ? url.trim() : bulkUrl.trim()),
+              headers: {
+                "Content-Type": "application/json",
+                "email": getPreferences().getString("syncEmail") ?? "",
+                "password": getPreferences().getString("syncPassword") ?? ""
+              },
+              body: json.encode(data));
       if (response.statusCode != 200) {
         debugPrint("Could not send history data!");
       }
@@ -33,6 +35,14 @@ class HistorySync {
   }
 
   Future<void> sendQuery(String query) async {
-    await _post(query);
+    await _post({"text": query});
+  }
+
+  Future<void> sendHistory(List<String> history) async {
+    await _post({
+      "entries": [
+        ...history.map((e) => {"text": e})
+      ]
+    }, bulk: true);
   }
 }
