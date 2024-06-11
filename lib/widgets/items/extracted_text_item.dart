@@ -16,7 +16,7 @@ class ExtractedTextItem extends StatelessWidget {
     final queryProvider = QueryProvider.of(context);
     return ItemCard(
         onTap: () {
-          queryProvider.addToHistoryAndSearch(text);
+          queryProvider.query = text;
           popAll(context);
         },
         onLongPress: () {

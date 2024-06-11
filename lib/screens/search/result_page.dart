@@ -183,8 +183,7 @@ class _ResultPageState<T extends SearchType> extends State<ResultPage<T>>
                     const TextSpan(text: "Try searching for "),
                     LinkSpan(context, text: value.original, bold: true,
                         onTap: () {
-                      queryProvider.searchController.text = value.original;
-                      queryProvider.addToHistoryAndSearch(value.original);
+                      queryProvider.query = value.original;
                     }),
                   ] else
                     TextSpan(text: "No matches for ${value.original}"),

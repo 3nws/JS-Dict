@@ -23,7 +23,6 @@ class ProcessTextIntentHandler {
 
         tabController.index = 0;
         QueryProvider.of(context).query = incomingText;
-        QueryProvider.of(context).addToHistoryAndSearch(incomingText);
         popAll(context);
 
         if (incomingText.length == 1 && isKanji(incomingText)) {

@@ -118,7 +118,7 @@ class _SearchScreenState extends State<SearchScreen>
           style: jpTextStyle,
           focusNode: _searchFocusNode,
           controller: searchController,
-          onSubmitted: (text) => queryProvider.addToHistoryAndSearch(text),
+          onSubmitted: (text) => queryProvider.query = text,
           autofocus: false,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),

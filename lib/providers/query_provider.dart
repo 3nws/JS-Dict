@@ -29,6 +29,7 @@ class QueryProvider extends ChangeNotifier {
   void updateQuery() {
     sanitizeText();
     _query = searchController.text;
+    addToHistory(searchController.text);
     notifyListeners();
   }
 
@@ -70,15 +71,13 @@ class QueryProvider extends ChangeNotifier {
   static const _historyKey = "History";
   List<String> get history => _preferences.getStringList(_historyKey) ?? [];
 
-  void addToHistoryAndSearch(String text) {
-    _query = text;
-    searchController.text = text;
+  void addToHistory(String text) {
     _preferences.setStringList(
         _historyKey,
         history
           ..remove(text)
           ..insert(0, text));
-    updateQuery();
+    getHistorySync().sendQuery(text);
   }
 
   void clearHistory() {

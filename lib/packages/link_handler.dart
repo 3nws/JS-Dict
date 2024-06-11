@@ -58,7 +58,6 @@ class LinkHandler {
       "sentences" => SentenceDetailsScreen.id(data),
       "search" => () {
           tabController.index = _tabIndex(keyword);
-          QueryProvider.of(context).addToHistoryAndSearch(keyword);
           QueryProvider.of(context).query = keyword;
           popAll(context);
 
