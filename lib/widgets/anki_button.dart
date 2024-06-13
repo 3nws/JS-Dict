@@ -178,7 +178,7 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text("${T.toString()} updated in the JS-Dict deck.")),
+                content: Text("$T updated in the JS-Dict deck.")),
           );
         }
       });
@@ -192,7 +192,7 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
       if (res.isValue) {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${T.toString()} added to the JS-Dict deck.")),
+          SnackBar(content: Text("$T added to the JS-Dict deck.")),
         );
       }
     });
@@ -252,7 +252,7 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content: Text(
-                      "Please wait while the ${T.toString()} is being added to the JS-Dict deck.")),
+                      "Please wait while the $T is being added to the JS-Dict deck.")),
             );
           }
 
