@@ -20,6 +20,24 @@ Files:
 - https://github.com/tesseract-ocr/tessdata/blob/main/jpn.traineddata
 - https://github.com/tesseract-ocr/tessdata/blob/main/jpn_vert.traineddata
 
+## Screenshots
+
+[<img src="metadata/en-US/images/phoneScreenshots/01.jpg" width="160">](metadata/en-US/images/phoneScreenshots/01.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/02.jpg" width="160">](metadata/en-US/images/phoneScreenshots/02.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/03.jpg" width="160">](metadata/en-US/images/phoneScreenshots/03.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/04.jpg" width="160">](metadata/en-US/images/phoneScreenshots/04.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/05.jpg" width="160">](metadata/en-US/images/phoneScreenshots/05.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/06.jpg" width="160">](metadata/en-US/images/phoneScreenshots/06.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/07.jpg" width="160">](metadata/en-US/images/phoneScreenshots/07.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/08.jpg" width="160">](metadata/en-US/images/phoneScreenshots/08.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/09.jpg" width="160">](metadata/en-US/images/phoneScreenshots/09.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/10.jpg" width="160">](metadata/en-US/images/phoneScreenshots/10.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/11.jpg" width="160">](metadata/en-US/images/phoneScreenshots/11.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/12.jpg" width="160">](metadata/en-US/images/phoneScreenshots/12.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/13.jpg" width="160">](metadata/en-US/images/phoneScreenshots/13.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/14.jpg" width="160">](metadata/en-US/images/phoneScreenshots/14.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/15.jpg" width="160">](metadata/en-US/images/phoneScreenshots/15.jpg)
+
 ## License
 
 JS-Dict is Free Software: You can use, study, share, and improve it at will. Specifically you can redistribute and/or modify it under the terms of the [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.en.html) as published by the Free Software Foundation.
