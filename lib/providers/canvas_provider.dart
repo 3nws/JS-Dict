@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 
 class CanvasProvider extends ChangeNotifier {
   static CanvasProvider of(BuildContext context) {
-    return Provider.of<CanvasProvider>(context, listen: true);
+    return Provider.of<CanvasProvider>(context, listen: false);
   }
 
   List<List<double>> pressures = [];

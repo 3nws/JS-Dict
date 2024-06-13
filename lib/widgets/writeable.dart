@@ -1,6 +1,7 @@
 import "dart:ui";
 import "package:flutter/material.dart";
 import "package:jsdict/providers/canvas_provider.dart";
+import "package:provider/provider.dart";
 
 class Writeable extends StatefulWidget {
   const Writeable({super.key});
@@ -12,67 +13,68 @@ class Writeable extends StatefulWidget {
 class _WriteableState extends State<Writeable> {
   late double pressure;
   late Offset position;
-  late CustomPaint paintCanvas;
   String currentStroke = "";
 
   @override
   Widget build(BuildContext context) {
-    final canvasProvider = CanvasProvider.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
 
-    paintCanvas = CustomPaint(
-      painter: Painter(
-          lines: canvasProvider.lines,
-          currentLine: canvasProvider.currentLine,
-          pressures: canvasProvider.pressures,
-          currentLinePressures: canvasProvider.currentLinePressures,
-          color: primaryColor),
-    );
-
-    return Listener(
-      onPointerMove: (details) {
-        final int x = details.localPosition.dx.toInt();
-        final int y = details.localPosition.dy.toInt();
-        final String stroke = "($x $y)";
-        setState(() {
-          canvasProvider.currentLinePressures.add(details.pressure);
-          canvasProvider.currentLine.add(details.localPosition);
-          currentStroke += "$stroke ";
-        });
-      },
-      onPointerUp: (details) {
-        setState(() {
-          canvasProvider.lines.add(canvasProvider.currentLine.toList());
-          canvasProvider.pressures
-              .add(canvasProvider.currentLinePressures.toList());
-          canvasProvider.currentLine.clear();
-          canvasProvider.currentLinePressures.clear();
-          canvasProvider.strokes.add("($currentStroke)");
-          currentStroke = "";
-          canvasProvider.sexp =
-              "(character (width ${canvasProvider.width}) (height ${canvasProvider.height}) (strokes ${canvasProvider.strokes.join()}))";
-        });
-      },
-      child: LayoutBuilder(builder: (context, constraints) {
-        canvasProvider.width = constraints.maxWidth;
-        canvasProvider.height = constraints.maxHeight;
-        return SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: paintCanvas);
-      }),
-    );
+    return Consumer<CanvasProvider>(builder: (_, provider, __) {
+      return Listener(
+        onPointerMove: (details) {
+          final int x = details.localPosition.dx.toInt();
+          final int y = details.localPosition.dy.toInt();
+          final String stroke = "($x $y)";
+          setState(() {
+            provider.currentLinePressures.add(details.pressure);
+            provider.currentLine.add(details.localPosition);
+            currentStroke += "$stroke ";
+          });
+        },
+        onPointerUp: (details) {
+          setState(() {
+            provider.lines.add(provider.currentLine.toList());
+            provider.pressures.add(provider.currentLinePressures.toList());
+            provider.currentLine.clear();
+            provider.currentLinePressures.clear();
+            provider.strokes.add("($currentStroke)");
+            currentStroke = "";
+            provider.sexp =
+                "(character (width ${provider.width}) (height ${provider.height}) (strokes ${provider.strokes.join()}))";
+          });
+        },
+        child: LayoutBuilder(builder: (context, constraints) {
+          provider.width = constraints.maxWidth;
+          provider.height = constraints.maxHeight;
+          return SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: CustomPaint(
+                painter: Painter(
+                    repaint: provider,
+                    lines: provider.lines,
+                    currentLine: provider.currentLine,
+                    pressures: provider.pressures,
+                    currentLinePressures: provider.currentLinePressures,
+                    color: primaryColor),
+              ));
+        }),
+      );
+    });
   }
 }
 
 class Painter extends CustomPainter {
   Painter(
-      {required this.lines,
+      {required this.repaint,
+      required this.lines,
       required this.currentLine,
       required this.color,
       required this.pressures,
-      required this.currentLinePressures});
+      required this.currentLinePressures})
+      : super(repaint: repaint);
 
+  final Listenable repaint;
   final List<List<Offset>> lines;
   final List<Offset> currentLine;
   final Color color;
