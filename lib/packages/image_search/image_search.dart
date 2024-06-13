@@ -19,7 +19,11 @@ class ImageSearch {
         duration: Duration(minutes: 2),
       ),
     );
-    final List<String>? texts = await processImage(imagePath);
+    final List<List<String>> models = [
+      ["jpn_vert", "jpn"],
+      ["Vertical model", "Horizontal model"]
+    ];
+    final List<String>? texts = await processImage(models[0], imagePath);
     if (texts == null && context.mounted) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -32,8 +36,8 @@ class ImageSearch {
     }
     final List<ExtractedTextItem> items = [];
     if (texts != null) {
-      for (final text in texts) {
-        items.add(ExtractedTextItem(text: text));
+      for (final (idx, text) in texts.indexed) {
+        items.add(ExtractedTextItem(model: models[1][idx], text: text));
       }
     }
     if (!context.mounted) return;
@@ -86,8 +90,8 @@ class ImageSearch {
     return croppedFile?.path;
   }
 
-  static Future<List<String>?> processImage(String imagePath) async {
-    final List<String> models = ["jpn_vert", "jpn"];
+  static Future<List<String>?> processImage(
+      List<String> models, String imagePath) async {
     final List<String> texts = [];
     for (final model in models) {
       final String text = await FlutterTesseractOcr.extractText(

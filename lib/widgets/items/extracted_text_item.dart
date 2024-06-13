@@ -7,8 +7,9 @@ import "package:jsdict/providers/query_provider.dart";
 import "item_card.dart";
 
 class ExtractedTextItem extends StatelessWidget {
-  const ExtractedTextItem({super.key, required this.text});
+  const ExtractedTextItem({super.key, required this.model, required this.text});
 
+  final String model;
   final String text;
 
   @override
@@ -26,7 +27,8 @@ class ExtractedTextItem extends StatelessWidget {
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 22.0),
-          title: Text(
+          title: Text(model),
+          subtitle: Text(
             text,
             style: jpTextStyle,
           ),
