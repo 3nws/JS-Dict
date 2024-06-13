@@ -37,6 +37,8 @@ Files:
 [<img src="metadata/en-US/images/phoneScreenshots/13.jpg" width="160">](metadata/en-US/images/phoneScreenshots/13.jpg)
 [<img src="metadata/en-US/images/phoneScreenshots/14.jpg" width="160">](metadata/en-US/images/phoneScreenshots/14.jpg)
 [<img src="metadata/en-US/images/phoneScreenshots/15.jpg" width="160">](metadata/en-US/images/phoneScreenshots/15.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/16.jpg" width="160">](metadata/en-US/images/phoneScreenshots/16.jpg)
+[<img src="metadata/en-US/images/phoneScreenshots/17.jpg" width="160">](metadata/en-US/images/phoneScreenshots/17.jpg)
 
 ## License
 
