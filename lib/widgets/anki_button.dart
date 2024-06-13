@@ -177,8 +177,7 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
         if (res.isValue) {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("$T updated in the JS-Dict deck.")),
+            SnackBar(content: Text("$T updated in the JS-Dict deck.")),
           );
         }
       });
@@ -278,8 +277,10 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
           }
         },
         icon: SvgPicture.asset(
-          "assets/anki-icon.svg",
+          "assets/anki-icon-monochrome.svg",
           semanticsLabel: "AnkiDroid Logo",
+          colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.primary, BlendMode.srcIn),
         ));
   }
 }
