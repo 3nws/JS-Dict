@@ -6,15 +6,12 @@ import "package:flutter/material.dart";
 import "package:flutter_ankidroid/flutter_ankidroid.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:jsdict/models/models.dart";
-import "package:jsdict/packages/string_util.dart";
 import "package:jsdict/singletons.dart";
 import "package:appcheck/appcheck.dart";
 
-class AnkiButton extends StatelessWidget {
-  final Word? word;
-  final Kanji? kanji;
-  final Sentence? sentence;
-  const AnkiButton({super.key, this.kanji, this.word, this.sentence});
+class AnkiButton<T extends SearchType> extends StatelessWidget {
+  final T item;
+  const AnkiButton({super.key, required this.item});
 
   Future<int?> getDeckId(Ankidroid anki) async {
     final decks = await anki.deckList();
@@ -36,25 +33,25 @@ class AnkiButton extends StatelessWidget {
     return null;
   }
 
-  Future<int?> getModelId(Ankidroid anki, String type) async {
+  Future<int?> getModelId(Ankidroid anki) async {
     final models = await anki.getModelList(0);
     if (models.isValue) {
       Result<int> res;
+      final String modelName = "js-dict-${T.toString().toLowerCase()}";
       final modelsMap = models.asValue!.value;
-      int modelId = (modelsMap.keys.firstWhere(
-          (k) => modelsMap[k] == "js-dict-$type",
+      int modelId = (modelsMap.keys.firstWhere((k) => modelsMap[k] == modelName,
           orElse: () => -1)) as int;
 
       AnkiModel model;
 
-      switch (type) {
-        case "kanji":
+      switch (T) {
+        case const (Kanji):
           model = AnkiKanjiModel();
           break;
-        case "word":
+        case const (Word):
           model = AnkiWordModel();
           break;
-        case "sentence":
+        case const (Sentence):
           model = AnkiSentenceModel();
           break;
         default:
@@ -73,24 +70,25 @@ class AnkiButton extends StatelessWidget {
     return null;
   }
 
-  Future<List<String>?> getFieldsByType(String type) async {
+  Future<List<String>?> getFields() async {
     List<String> fields = [];
-    switch (type) {
-      case "kanji":
+    switch (T) {
+      case const (Kanji):
         fields = [
-          kanji!.kanji,
-          kanji!.kunReadings.join(", "),
-          kanji!.onReadings.join(", "),
-          kanji!.meanings.join(", "),
-          "https://jisho.org/search/${kanji!.kanji}"
+          (item as Kanji).kanji,
+          (item as Kanji).kunReadings.join(", "),
+          (item as Kanji).onReadings.join(", "),
+          (item as Kanji).meanings.join(", "),
+          "https://jisho.org/search/${(item as Kanji).kanji}"
         ];
         break;
-      case "word":
+      case const (Word):
         fields = [
-          word!.word.getText(),
-          word!.word.getReading(),
-          word!.definitions.join(", "),
-          word!.definitions
+          (item as Word).word.getText(),
+          (item as Word).word.getReading(),
+          (item as Word).definitions.join(", "),
+          (item as Word)
+              .definitions
               .map((definition) => definition.exampleSentence)
               .mapIndexed((idx, sentence) {
                 return sentence == null
@@ -100,7 +98,8 @@ class AnkiButton extends StatelessWidget {
               .toList()
               .whereType<String>()
               .join("<br><br>"),
-          word!.definitions
+          (item as Word)
+              .definitions
               .map((definition) => definition.exampleSentence)
               .mapIndexed((idx, sentence) {
                 return sentence == null
@@ -110,7 +109,8 @@ class AnkiButton extends StatelessWidget {
               .toList()
               .whereType<String>()
               .join("<br><br>"),
-          word!.definitions
+          (item as Word)
+              .definitions
               .map((definition) => definition.exampleSentence)
               .mapIndexed((idx, sentence) {
                 return sentence == null
@@ -120,28 +120,30 @@ class AnkiButton extends StatelessWidget {
               .toList()
               .whereType<String>()
               .join("<br><br>"),
-          word!.audioUrl == null
+          (item as Word).audioUrl == null
               ? ""
-              : "<audio controls src='${word!.audioUrl}'></audio>",
-          "https://jisho.org/word/${word!.id}"
+              : "<audio controls src='${(item as Word).audioUrl}'></audio>",
+          "https://jisho.org/word/${(item as Word).id}"
         ];
         break;
-      case "sentence":
-        final List<Kanji> sentenceKanji = sentence!.kanji ??
-            (await getClient().search<Kanji>(sentence!.japanese.getText()))
+      case const (Sentence):
+        final List<Kanji> sentenceKanji = (item as Sentence).kanji ??
+            (await getClient()
+                    .search<Kanji>((item as Sentence).japanese.getText()))
                 .results;
         fields = [
-          sentence!.japanese.getText(),
-          (sentence!.japanese
+          (item as Sentence).japanese.getText(),
+          ((item as Sentence)
+              .japanese
               .map((part) =>
                   "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}")
               .join()),
-          sentence!.english,
+          (item as Sentence).english,
           sentenceKanji
               .map((kanji) =>
                   "<a href='https://jisho.org/search/${kanji.kanji}' class='kanji'><b>${kanji.kanji}</b></a>\n\n<br><br>")
               .join(),
-          "https://jisho.org/sentences/${sentence!.id}"
+          "https://jisho.org/sentences/${(item as Sentence).id}"
         ];
         break;
       default:
@@ -150,17 +152,17 @@ class AnkiButton extends StatelessWidget {
     return fields;
   }
 
-  String? getKeyByType(String type) {
+  String? getKey() {
     String key;
-    switch (type) {
-      case "kanji":
-        key = kanji!.kanji;
+    switch (T) {
+      case const (Kanji):
+        key = (item as Kanji).kanji;
         break;
-      case "word":
-        key = word!.word.getText();
+      case const (Word):
+        key = (item as Word).word.getText();
         break;
-      case "sentence":
-        key = sentence!.japanese.getText();
+      case const (Sentence):
+        key = (item as Sentence).japanese.getText();
         break;
       default:
         return null;
@@ -169,15 +171,14 @@ class AnkiButton extends StatelessWidget {
   }
 
   void updateNote(Ankidroid anki, Iterable<dynamic> ourDups,
-      List<String> fields, String type, BuildContext context) {
+      List<String> fields, BuildContext context) {
     ourDups.toList().forEach((dup) {
       anki.updateNoteFields(dup["id"] as int, fields).then((res) {
         if (res.isValue) {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                    Text("${type.capitalize()} updated in the JS-Dict deck.")),
+                content: Text("${T.toString()} updated in the JS-Dict deck.")),
           );
         }
       });
@@ -185,13 +186,13 @@ class AnkiButton extends StatelessWidget {
   }
 
   void addNote(Ankidroid anki, List<String> fields, int modelId, int deckId,
-      String type, BuildContext context) {
-    anki.addNote(modelId, deckId, fields, ["${type}_js-dict"]).then((res) {
+      BuildContext context) {
+    anki.addNote(modelId, deckId, fields,
+        ["${T.toString().toLowerCase()}_js-dict"]).then((res) {
       if (res.isValue) {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("${type.capitalize()} added to the JS-Dict deck.")),
+          SnackBar(content: Text("${T.toString()} added to the JS-Dict deck.")),
         );
       }
     });
@@ -203,7 +204,6 @@ class AnkiButton extends StatelessWidget {
         onPressed: () async {
           final anki = getAnki();
           final version = await anki.apiHostSpecVersion();
-          final object = kanji ?? word ?? sentence;
           if (version.isError) {
             String label;
             String message;
@@ -247,23 +247,12 @@ class AnkiButton extends StatelessWidget {
             return;
           }
 
-          String type;
-          if (object is Kanji) {
-            type = "kanji";
-          } else if (object is Word) {
-            type = "word";
-          } else if (object is Sentence) {
-            type = "sentence";
-          } else {
-            return;
-          }
-
           if (context.mounted) {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content: Text(
-                      "Please wait while the ${type.capitalize()} is being added to the JS-Dict deck.")),
+                      "Please wait while the ${T.toString()} is being added to the JS-Dict deck.")),
             );
           }
 
@@ -271,20 +260,20 @@ class AnkiButton extends StatelessWidget {
           if (!decks.isValue) return;
 
           final int? deckId = await getDeckId(anki);
-          final int? modelId = await getModelId(anki, type);
-          final List<String>? fields = await getFieldsByType(type);
-          final String? key = getKeyByType(type);
+          final int? modelId = await getModelId(anki);
+          final List<String>? fields = await getFields();
+          final String? key = getKey();
           if ([deckId, modelId, fields, key].contains(null)) return;
 
           final dups = await anki.findDuplicateNotesWithKey(modelId!, key!);
           if (dups.isValue && context.mounted) {
             final dupsList = dups.asValue!.value;
-            final ourDups = dupsList.where(
-                (dup) => (dup["tags"] as List).contains("${type}_js-dict"));
+            final ourDups = dupsList.where((dup) => (dup["tags"] as List)
+                .contains("${T.toString().toLowerCase()}_js-dict"));
             if (ourDups.isNotEmpty) {
-              updateNote(anki, ourDups, fields!, type, context);
+              updateNote(anki, ourDups, fields!, context);
             } else {
-              addNote(anki, fields!, modelId, deckId!, type, context);
+              addNote(anki, fields!, modelId, deckId!, context);
             }
           }
         },

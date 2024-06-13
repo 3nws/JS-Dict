@@ -37,13 +37,13 @@ class KanjiDetailsScreen extends StatelessWidget {
         actions: [
           kanji != null
               ? AnkiButton(
-                  kanji: kanji,
+                  item: kanji!,
                 )
               : LoaderWidget(
                   isOnAction: true,
                   onLoad: () => getClient().kanjiDetails(kanjiId!),
                   handler: (data) => AnkiButton(
-                    kanji: data,
+                    item: data,
                   ),
                 ),
           LinkPopupButton([

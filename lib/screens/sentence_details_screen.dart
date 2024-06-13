@@ -28,13 +28,13 @@ class SentenceDetailsScreen extends StatelessWidget {
         actions: [
           sentence != null
               ? AnkiButton(
-                  sentence: sentence,
+                  item: sentence!,
                 )
               : LoaderWidget(
                   isOnAction: true,
                   onLoad: () => getClient().sentenceDetails(sentenceId!),
                   handler: (data) => AnkiButton(
-                    sentence: data,
+                    item: data,
                   ),
                 ),
           if (_id != null)

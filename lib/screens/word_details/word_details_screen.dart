@@ -53,13 +53,13 @@ class WordDetailsScreen extends StatelessWidget {
         actions: [
           word != null
               ? AnkiButton(
-                  word: word,
+                  item: word!,
                 )
               : LoaderWidget(
                   isOnAction: true,
                   onLoad: _searchFuture,
                   handler: (data) => AnkiButton(
-                    word: data,
+                    item: data,
                   ),
                 ),
           ValueListenableBuilder(
