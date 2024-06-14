@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:flutter/widgets.dart";
 import "package:jsdict/packages/navigation.dart";
 import "package:jsdict/providers/query_provider.dart";
 import "package:jsdict/screens/search_options/search_options_screen.dart";
@@ -22,6 +21,7 @@ class _HistorySelectionState extends State<_HistorySelection> {
   @override
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
+    final primaryColor = Theme.of(context).colorScheme.primary;
     final List<Widget> syncWidgets =
         getPreferences().getString("syncBulkUrl") != null
             ? [
@@ -33,10 +33,10 @@ class _HistorySelectionState extends State<_HistorySelection> {
                     queryProvider.syncHistory();
                     setState(() {});
                   },
-                  child: const Text(
+                  child: Text(
                     "SYNC ALL",
                     style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
+                        color: primaryColor, fontWeight: FontWeight.bold),
                   ),
                 ),
               ]
@@ -57,10 +57,10 @@ class _HistorySelectionState extends State<_HistorySelection> {
                       provider.clearHistory();
                       setState(() {});
                     },
-                    child: const Text(
+                    child: Text(
                       "CLEAR",
                       style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: primaryColor, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ...syncWidgets
@@ -77,11 +77,9 @@ class _HistorySelectionState extends State<_HistorySelection> {
                   const SizedBox(
                     width: 20,
                   ),
-                  Material(
-                    child: GestureDetector(
-                        onTap: () => provider.removeFromHistory(historyEntry),
-                        child: const Icon(Icons.clear)),
-                  ),
+                  GestureDetector(
+                      onTap: () => provider.removeFromHistory(historyEntry),
+                      child: const Icon(Icons.clear)),
                 ],
               ),
               onTap: () {
