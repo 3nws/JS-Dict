@@ -94,6 +94,7 @@ class QueryProvider extends ChangeNotifier {
   void clearHistory() {
     _preferences.remove(_historyKey);
     searchController.text = "";
+    notifyListeners();
   }
 
   @override

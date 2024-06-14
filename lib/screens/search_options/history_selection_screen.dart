@@ -23,7 +23,8 @@ class _HistorySelectionState extends State<_HistorySelection> {
     final queryProvider = QueryProvider.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     final List<Widget> syncWidgets =
-        getPreferences().getString("syncBulkUrl") != null
+        getPreferences().getString("syncBulkUrl") != null &&
+                queryProvider.history.isNotEmpty
             ? [
                 const VerticalDivider(
                   thickness: 3,
@@ -31,7 +32,6 @@ class _HistorySelectionState extends State<_HistorySelection> {
                 GestureDetector(
                   onTap: () {
                     queryProvider.syncHistory();
-                    setState(() {});
                   },
                   child: Text(
                     "SYNC ALL",
@@ -55,7 +55,6 @@ class _HistorySelectionState extends State<_HistorySelection> {
                   GestureDetector(
                     onTap: () {
                       provider.clearHistory();
-                      setState(() {});
                     },
                     child: Text(
                       "CLEAR",
