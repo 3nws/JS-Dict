@@ -72,16 +72,23 @@ class QueryProvider extends ChangeNotifier {
   List<String> get history => _preferences.getStringList(_historyKey) ?? [];
 
   void addToHistory(String text) {
-    _preferences.setStringList(
-        _historyKey,
-        history
-          ..remove(text)
-          ..insert(0, text));
-    getHistorySync().sendQuery(text);
+    if (text.isNotEmpty) {
+      _preferences.setStringList(
+          _historyKey,
+          history
+            ..remove(text)
+            ..insert(0, text));
+      getHistorySync().sendQuery(text);
+    }
   }
 
   void syncHistory() {
     getHistorySync().sendHistory(history);
+  }
+
+  void removeFromHistory(String query) {
+    _preferences.setStringList(_historyKey, history..remove(query));
+    notifyListeners();
   }
 
   void clearHistory() {
