@@ -260,7 +260,7 @@ class Parser {
           (e) =>
               e.querySelector("h2")!.text.contains("$type reading compounds"),
           (column) => column.collectAll("ul > li", (e) {
-            final lines = e.text.trim().split("\n");
+            final lines = e.text.split("\n")..removeWhere((t) => t.isEmpty);
             assert(lines.length == 3);
 
             final compound = lines[0].trim();
