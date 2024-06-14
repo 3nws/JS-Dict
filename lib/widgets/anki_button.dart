@@ -42,21 +42,14 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
       int modelId = (modelsMap.keys.firstWhere((k) => modelsMap[k] == modelName,
           orElse: () => -1)) as int;
 
-      AnkiModel model;
+      final AnkiModel? model = switch (T) {
+        const (Kanji) => AnkiKanjiModel(),
+        const (Word) => AnkiWordModel(),
+        const (Sentence) => AnkiSentenceModel(),
+        _ => null,
+      };
 
-      switch (T) {
-        case const (Kanji):
-          model = AnkiKanjiModel();
-          break;
-        case const (Word):
-          model = AnkiWordModel();
-          break;
-        case const (Sentence):
-          model = AnkiSentenceModel();
-          break;
-        default:
-          return null;
-      }
+      if (model == null) return null;
 
       if (modelId == -1) {
         res = await anki.addNewCustomModel(model.name, model.fields,
@@ -71,19 +64,28 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
   }
 
   Future<List<String>?> getFields() async {
-    List<String> fields = [];
-    switch (T) {
-      case const (Kanji):
-        fields = [
+    return switch (T) {
+      // "Kanji",
+      // "KunReadings",
+      // "OnReadings",
+      // "Meanings",
+      // "Link"
+      const (Kanji) => [
           (item as Kanji).kanji,
           (item as Kanji).kunReadings.join(", "),
           (item as Kanji).onReadings.join(", "),
           (item as Kanji).meanings.join(", "),
           "https://jisho.org/search/${(item as Kanji).kanji}"
-        ];
-        break;
-      case const (Word):
-        fields = [
+        ],
+      // "Japanese",
+      // "Reading",
+      // "Meaning",
+      // "SentKanji",
+      // "SentFurigana",
+      // "SentenceMeaning",
+      // "Audio",
+      // "Link"
+      const (Word) => [
           (item as Word).word.getText(),
           (item as Word).word.getReading(),
           (item as Word).definitions.join(", "),
@@ -124,14 +126,13 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
               ? ""
               : "<audio controls src='${(item as Word).audioUrl}'></audio>",
           "https://jisho.org/word/${(item as Word).id}"
-        ];
-        break;
-      case const (Sentence):
-        final List<Kanji> sentenceKanji = (item as Sentence).kanji ??
-            (await getClient()
-                    .search<Kanji>((item as Sentence).japanese.getText()))
-                .results;
-        fields = [
+        ],
+      // "Sentence",
+      // "SentFurigana",
+      // "SentEng",
+      // "Vocab",
+      // "Link",
+      const (Sentence) => [
           (item as Sentence).japanese.getText(),
           ((item as Sentence)
               .japanese
@@ -139,35 +140,26 @@ class AnkiButton<T extends SearchType> extends StatelessWidget {
                   "${part.furigana != '' ? '<b>' : ''}${part.text}${part.furigana != '' ? '[${part.furigana}]' : ''}${part.furigana != '' ? '</b>' : ''}")
               .join()),
           (item as Sentence).english,
-          sentenceKanji
+          ((item as Sentence).kanji ??
+                  (await getClient()
+                          .search<Kanji>((item as Sentence).japanese.getText()))
+                      .results)
               .map((kanji) =>
                   "<a href='https://jisho.org/search/${kanji.kanji}' class='kanji'><b>${kanji.kanji}</b></a>\n\n<br><br>")
               .join(),
           "https://jisho.org/sentences/${(item as Sentence).id}"
-        ];
-        break;
-      default:
-        return null;
-    }
-    return fields;
+        ],
+      _ => null,
+    };
   }
 
   String? getKey() {
-    String key;
-    switch (T) {
-      case const (Kanji):
-        key = (item as Kanji).kanji;
-        break;
-      case const (Word):
-        key = (item as Word).word.getText();
-        break;
-      case const (Sentence):
-        key = (item as Sentence).japanese.getText();
-        break;
-      default:
-        return null;
-    }
-    return key;
+    return switch (T) {
+      const (Kanji) => (item as Kanji).kanji,
+      const (Word) => (item as Word).word.getText(),
+      const (Sentence) => (item as Sentence).japanese.getText(),
+      _ => null
+    };
   }
 
   void updateNote(Ankidroid anki, Iterable<dynamic> ourDups,

@@ -9,6 +9,35 @@ abstract class AnkiModel {
   String get css => "";
 }
 
+class AnkiKanjiModel extends AnkiModel {
+  @override
+  String name = "js-dict-kanji";
+
+  @override
+  List<String> fields = [
+    "Kanji",
+    "KunReadings",
+    "OnReadings",
+    "Meanings",
+    "Link"
+  ];
+
+  @override
+  List<String> cards = ["Kanji"];
+
+  @override
+  List<String> qfmt = ["""<div id="kanji">{{Kanji}}</div>"""];
+
+  @override
+  List<String> afmt = [
+    """{{FrontSide}}\n\n<hr id=answer>\n\nKun: {{KunReadings}}\n\n<br><br>On: {{OnReadings}}\n\n<br><br>Meanings: {{Meanings}}<br><br>{{#Link}}<a href="{{Link}}">Open in JS-Dict</a>{{/Link}}""",
+  ];
+
+  @override
+  String css =
+      """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n}""";
+}
+
 class AnkiWordModel extends AnkiModel {
   @override
   String name = "js-dict-word";
@@ -39,35 +68,6 @@ class AnkiWordModel extends AnkiModel {
   @override
   String css =
       """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n} b { font-weight: 600; } .jpsentence { font-size: 35px; }""";
-}
-
-class AnkiKanjiModel extends AnkiModel {
-  @override
-  String name = "js-dict-kanji";
-
-  @override
-  List<String> fields = [
-    "Kanji",
-    "KunReadings",
-    "OnReadings",
-    "Meanings",
-    "Link"
-  ];
-
-  @override
-  List<String> cards = ["Kanji"];
-
-  @override
-  List<String> qfmt = ["""<div id="kanji">{{Kanji}}</div>"""];
-
-  @override
-  List<String> afmt = [
-    """{{FrontSide}}\n\n<hr id=answer>\n\nKun: {{KunReadings}}\n\n<br><br>On: {{OnReadings}}\n\n<br><br>Meanings: {{Meanings}}<br><br>{{#Link}}<a href="{{Link}}">Open in JS-Dict</a>{{/Link}}""",
-  ];
-
-  @override
-  String css =
-      """#kanji{\n\nfont-size: 35px;text-align: center;}\n\n.card{\n\nfont-family: arial;\n\nfont-size: 20px;\n\ntext-align: center;\n\ncolor: black;\n\nbackground-color: white;\n\n}""";
 }
 
 class AnkiSentenceModel extends AnkiModel {
