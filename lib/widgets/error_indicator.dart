@@ -1,6 +1,5 @@
 import "dart:io";
 
-import "package:expandable_text/expandable_text.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:http/http.dart";
@@ -112,7 +111,7 @@ class ErrorInfoDialog extends StatelessWidget {
             _infoText("Message: ", _errorMessage),
             if (stackTrace != null) ...[
               _infoText("Stack trace: ", ""),
-              ExpandableText(
+              _ExpandableText(
                 stackTrace.toString(),
                 expandText: "Show",
                 collapseText: "Hide",
@@ -131,6 +130,62 @@ class ErrorInfoDialog extends StatelessWidget {
         TextButton(
           child: const Text("Close"),
           onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExpandableText extends StatefulWidget {
+  final String text;
+  final String expandText;
+  final String collapseText;
+  final int maxLines;
+  final Color linkColor;
+
+  const _ExpandableText(
+    this.text, {
+    required this.expandText,
+    required this.collapseText,
+    required this.maxLines,
+    required this.linkColor,
+  });
+
+  @override
+  State<_ExpandableText> createState() => _ExpandableTextState();
+}
+
+class _ExpandableTextState extends State<_ExpandableText> {
+  String get text => widget.text;
+  String get expandText => widget.expandText;
+  String get collapseText => widget.collapseText;
+  int get maxLines => widget.maxLines;
+  Color get linkColor => widget.linkColor;
+
+  int? _maxLines;
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          maxLines: _maxLines ?? maxLines,
+          overflow: TextOverflow.ellipsis,
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _maxLines = !_expanded ? 999 : maxLines;
+              _expanded = !_expanded;
+            });
+          },
+          child: Text(
+            !_expanded ? expandText : collapseText,
+            style: TextStyle(color: linkColor),
+          ),
         ),
       ],
     );
