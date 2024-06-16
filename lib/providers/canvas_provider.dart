@@ -7,14 +7,18 @@ class CanvasProvider extends ChangeNotifier {
     return Provider.of<CanvasProvider>(context, listen: false);
   }
 
-  List<List<double>> pressures = [];
+  String currentStroke = "";
   List<Offset> currentLine = [];
   List<List<Offset>> lines = [];
+  List<List<double>> pressures = [];
   List<double> currentLinePressures = [];
+  
   List<String> strokes = [];
   List<String> matchingKanji = [];
+
   String _sexp = "";
   String get sexp => _sexp;
+
   double width = 0;
   double height = 0;
 
