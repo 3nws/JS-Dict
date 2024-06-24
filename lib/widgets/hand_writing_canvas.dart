@@ -3,17 +3,8 @@ import "package:flutter/material.dart";
 import "package:jsdict/providers/canvas_provider.dart";
 import "package:provider/provider.dart";
 
-class Writeable extends StatefulWidget {
-  const Writeable({super.key});
-
-  @override
-  State<Writeable> createState() => _WriteableState();
-}
-
-class _WriteableState extends State<Writeable> {
-  late double pressure;
-  late Offset position;
-  String currentStroke = "";
+class HandWritingCanvas extends StatelessWidget {
+  const HandWritingCanvas({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +16,19 @@ class _WriteableState extends State<Writeable> {
           final int x = details.localPosition.dx.toInt();
           final int y = details.localPosition.dy.toInt();
           final String stroke = "($x $y)";
-          setState(() {
-            provider.currentLinePressures.add(details.pressure);
-            provider.currentLine.add(details.localPosition);
-            currentStroke += "$stroke ";
-          });
+          provider.currentLinePressures.add(details.pressure);
+          provider.currentLine.add(details.localPosition);
+          provider.currentStroke += "$stroke ";
         },
         onPointerUp: (details) {
-          setState(() {
-            provider.lines.add(provider.currentLine.toList());
-            provider.pressures.add(provider.currentLinePressures.toList());
-            provider.currentLine.clear();
-            provider.currentLinePressures.clear();
-            provider.strokes.add("($currentStroke)");
-            currentStroke = "";
-            provider.sexp =
-                "(character (width ${provider.width}) (height ${provider.height}) (strokes ${provider.strokes.join()}))";
-          });
+          provider.lines.add(provider.currentLine.toList());
+          provider.pressures.add(provider.currentLinePressures.toList());
+          provider.currentLine.clear();
+          provider.currentLinePressures.clear();
+          provider.strokes.add("(${provider.currentStroke})");
+          provider.currentStroke = "";
+          provider.sexp =
+              "(character (width ${provider.width}) (height ${provider.height}) (strokes ${provider.strokes.join()}))";
         },
         child: LayoutBuilder(builder: (context, constraints) {
           provider.width = constraints.maxWidth;

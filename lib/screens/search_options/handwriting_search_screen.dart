@@ -3,7 +3,7 @@ import "package:jsdict/providers/canvas_provider.dart";
 import "package:jsdict/providers/query_provider.dart";
 import "package:jsdict/screens/search_options/search_options_screen.dart";
 import "package:jsdict/widgets/custom_kanji_button.dart";
-import "package:jsdict/widgets/writeable.dart";
+import "package:jsdict/widgets/hand_writing_canvas.dart";
 import "package:provider/provider.dart";
 
 class HandwritingSearchScreen extends SearchOptionsScreen {
@@ -20,14 +20,9 @@ class HandwritingSearchScreen extends SearchOptionsScreen {
         );
 }
 
-class _HandwritingSearch extends StatefulWidget {
+class _HandwritingSearch extends StatelessWidget {
   const _HandwritingSearch();
 
-  @override
-  State<_HandwritingSearch> createState() => _HandwritingSearchState();
-}
-
-class _HandwritingSearchState extends State<_HandwritingSearch> {
   @override
   Widget build(BuildContext context) {
     final queryProvider = QueryProvider.of(context);
@@ -47,7 +42,7 @@ class _HandwritingSearchState extends State<_HandwritingSearch> {
         const Divider(height: 0),
         const Expanded(
           flex: 3,
-          child: Center(child: Writeable()),
+          child: Center(child: HandWritingCanvas()),
         ),
       ],
     );
