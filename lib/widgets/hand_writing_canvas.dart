@@ -37,7 +37,7 @@ class HandWritingCanvas extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               child: CustomPaint(
-                painter: Painter(
+                painter: _Painter(
                     repaint: provider,
                     lines: provider.lines,
                     currentLine: provider.currentLine,
@@ -52,8 +52,8 @@ class HandWritingCanvas extends StatelessWidget {
   }
 }
 
-class Painter extends CustomPainter {
-  const Painter(
+class _Painter extends CustomPainter {
+  const _Painter(
       {required this.repaint,
       required this.lines,
       required this.currentLine,
