@@ -68,7 +68,7 @@ class Painter extends CustomPainter {
   final List<List<double>> pressures;
   final List<double> currentLinePressures;
 
-  double scalePressures = 10;
+  double scalePressures = 5;
   Paint paintStyle = Paint();
 
   @override
