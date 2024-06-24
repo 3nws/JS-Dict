@@ -43,7 +43,8 @@ class HandWritingCanvas extends StatelessWidget {
                     currentLine: provider.currentLine,
                     pressures: provider.pressures,
                     currentLinePressures: provider.currentLinePressures,
-                    color: primaryColor),
+                    color: primaryColor,
+                    paintStyle: Paint()),
               ));
         }),
       );
@@ -52,13 +53,14 @@ class HandWritingCanvas extends StatelessWidget {
 }
 
 class Painter extends CustomPainter {
-  Painter(
+  const Painter(
       {required this.repaint,
       required this.lines,
       required this.currentLine,
       required this.color,
       required this.pressures,
-      required this.currentLinePressures})
+      required this.currentLinePressures,
+      required this.paintStyle})
       : super(repaint: repaint);
 
   final Listenable repaint;
@@ -68,8 +70,8 @@ class Painter extends CustomPainter {
   final List<List<double>> pressures;
   final List<double> currentLinePressures;
 
-  double scalePressures = 5;
-  Paint paintStyle = Paint();
+  final double scalePressures = 5;
+  final Paint paintStyle;
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
