@@ -78,10 +78,10 @@ class ImageSearch {
         AndroidUiSettings(
             toolbarTitle: "Cropper",
             backgroundColor: colorScheme.surface,
-            toolbarColor: colorScheme.primary,
+            toolbarColor: colorScheme.surface,
             cropFrameColor: Colors.white,
             cropGridColor: Colors.white,
-            toolbarWidgetColor: colorScheme.surface,
+            toolbarWidgetColor: colorScheme.primary,
             activeControlsWidgetColor: colorScheme.primary,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
