@@ -1,33 +1,26 @@
 import "package:flutter/material.dart";
 import "package:jsdict/jp_text.dart";
-import "package:jsdict/packages/copy.dart";
-import "package:jsdict/packages/navigation.dart";
-import "package:jsdict/providers/query_provider.dart";
+import "package:jsdict/packages/image_search/model.enum.dart";
+import "package:jsdict/widgets/ocr_result_dialog.dart";
 
 import "item_card.dart";
 
 class ExtractedTextItem extends StatelessWidget {
   const ExtractedTextItem({super.key, required this.model, required this.text});
 
-  final String model;
+  final Model model;
   final String text;
 
   @override
   Widget build(BuildContext context) {
-    final queryProvider = QueryProvider.of(context);
     return ItemCard(
         onTap: () {
-          queryProvider.query = text;
-          popAll(context);
-        },
-        onLongPress: () {
-          copyText(context, text);
-          popAll(context);
+          showOCRResultDialog(context, model, text);
         },
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 22.0),
-          title: Text(model),
+          title: Text(model.title),
           subtitle: Text(
             text,
             style: jpTextStyle,

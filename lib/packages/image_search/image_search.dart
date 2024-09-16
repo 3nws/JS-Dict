@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_tesseract_ocr/android_ios.dart";
 import "package:image_cropper/image_cropper.dart";
 import "package:image_picker/image_picker.dart";
+import "package:jsdict/packages/image_search/model.enum.dart";
 import "package:jsdict/widgets/items/extracted_text_item.dart";
 
 class ImageSearch {
@@ -19,11 +20,10 @@ class ImageSearch {
         duration: Duration(minutes: 2),
       ),
     );
-    final List<List<String>> models = [
-      ["jpn_vert", "jpn"],
-      ["Vertical model", "Horizontal model"]
+    final List<Model> models = [
+      Model.vertical, Model.horizontal
     ];
-    final List<String>? texts = await processImage(models[0], imagePath);
+    final List<String>? texts = await processImage(models, imagePath);
     if (texts == null && context.mounted) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,7 +37,7 @@ class ImageSearch {
     final List<ExtractedTextItem> items = [];
     if (texts != null) {
       for (final (idx, text) in texts.indexed) {
-        items.add(ExtractedTextItem(model: models[1][idx], text: text));
+        items.add(ExtractedTextItem(model: models[idx], text: text));
       }
     }
     if (!context.mounted) return;
@@ -91,12 +91,12 @@ class ImageSearch {
   }
 
   static Future<List<String>?> processImage(
-      List<String> models, String imagePath) async {
+      List<Model> models, String imagePath) async {
     final List<String> texts = [];
     for (final model in models) {
       final String text = await FlutterTesseractOcr.extractText(
         imagePath,
-        language: model,
+        language: model.code,
       );
       if (text.isNotEmpty) {
         texts.add(text.replaceAll(" ", ""));
