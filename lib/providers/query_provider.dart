@@ -78,12 +78,7 @@ class QueryProvider extends ChangeNotifier {
           history
             ..remove(text)
             ..insert(0, text));
-      getHistorySync().sendQuery(text);
     }
-  }
-
-  void syncHistory() {
-    getHistorySync().sendHistory(history);
   }
 
   void removeFromHistory(String query) {
